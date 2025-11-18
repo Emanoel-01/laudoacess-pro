@@ -59,7 +59,7 @@ export default function Guia() {
         </Alert>
 
         <Tabs defaultValue="passeio" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-8 bg-white border border-slate-200">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-9 bg-white border border-slate-200">
             <TabsTrigger value="passeio">Passeio</TabsTrigger>
             <TabsTrigger value="circulacao">Circulação</TabsTrigger>
             <TabsTrigger value="rampas">Rampas</TabsTrigger>
@@ -68,6 +68,7 @@ export default function Guia() {
             <TabsTrigger value="sanitarios">Sanitários</TabsTrigger>
             <TabsTrigger value="estacionamento">Estacionamento</TabsTrigger>
             <TabsTrigger value="elevadores">Elevadores</TabsTrigger>
+            <TabsTrigger value="sinalizacao">Sinalização</TabsTrigger>
           </TabsList>
 
           {/* ABA 1: PASSEIO PÚBLICO */}
@@ -388,6 +389,42 @@ export default function Guia() {
                 <li><strong>Cabines pequenas:</strong> Impedindo a manobra e o posicionamento lateral para uso do painel.</li>
                 <li><strong>Botões:</strong> Sem sinalização tátil (Braile/relevo) ou instalados fora da altura de alcance.</li>
                 <li><strong>Elevador silencioso:</strong> Ou com som muito baixo, não alertando pessoas com deficiência visual sobre a chegada ao andar.</li>
+              </ul>
+            </AlertaNaoConformidade>
+          </TabsContent>
+
+          {/* ABA 9: SINALIZAÇÃO E COMUNICAÇÃO */}
+          <TabsContent value="sinalizacao" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Sinalização e Comunicação</h2>
+              <p className="text-slate-600">Sinalização informativa e de emergência</p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <ParametroCard
+                titulo="Visual"
+                valor="Contraste + Tamanho"
+                requisito="Contraste de cores, tamanho e tipo de letra adequados. Altura de instalação acessível."
+              />
+
+              <ParametroCard
+                titulo="Tátil (Braile)"
+                valor="0,90 m a 1,10 m"
+                requisito="Uso de Braile e caracteres em relevo para identificação (portas, elevadores). Altura de alcance tátil: 0,90 m a 1,10 m."
+              />
+
+              <ParametroCard
+                titulo="Emergência"
+                valor="Sonoro + Visual"
+                requisito="Alarmes sonoros e visuais (luzes estroboscópicas) para emergências."
+              />
+            </div>
+
+            <AlertaNaoConformidade>
+              <ul className="space-y-2 text-sm">
+                <li><strong>Painéis e placas:</strong> Com letras pequenas, baixo contraste (ex: branco sobre bege) ou cores inadequadas para daltônicos.</li>
+                <li><strong>Sinalização tátil:</strong> Instalada muito alta ou muito baixa, fora da faixa de alcance tátil (0,90 m a 1,10 m).</li>
+                <li><strong>Sistemas de alarme:</strong> Que emitem apenas som, ignorando a necessidade de alerta visual para pessoas com deficiência auditiva.</li>
               </ul>
             </AlertaNaoConformidade>
           </TabsContent>
