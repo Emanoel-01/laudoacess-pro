@@ -33,11 +33,6 @@ const navigationItems = [
     icon: User,
   },
   {
-    title: "Planos",
-    url: createPageUrl("Planos"),
-    icon: FileText,
-  },
-  {
     title: "Guia ABNT",
     url: createPageUrl("Guia"),
     icon: BookOpen,
