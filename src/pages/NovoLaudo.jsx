@@ -5,7 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { ArrowLeft, Save, FileText, Download } from "lucide-react";
+import { ArrowLeft, Save, FileText, Download, Building2, Package, ChevronLeft, ChevronRight } from "lucide-react";
 
 import InformacoesGerais from "../components/laudo/InformacoesGerais";
 import PasseioPublico from "../components/laudo/PasseioPublico";
@@ -32,9 +32,19 @@ import { gerarLaudoPDF } from "@/functions/gerarLaudoPDF";
 
 export default function NovoLaudo() {
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("informacoes");
+  const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const steps = [
+    { id: "informacoes", label: "Informações Gerais", icon: FileText },
+    { id: "areas-externas", label: "Áreas Externas", icon: Building2 },
+    { id: "circulacao", label: "Circulação e Acessos", icon: ArrowLeft },
+    { id: "sanitarios", label: "Sanitários e Vestiários", icon: Building2 },
+    { id: "mobiliario", label: "Mobiliário e Equipamentos", icon: Package },
+    { id: "anexos", label: "Anexos", icon: Download },
+    { id: "conclusao", label: "Conclusão", icon: FileText }
+  ];
   const [laudoData, setLaudoData] = useState({
     status: "rascunho",
     numero_revisao: "R00",
@@ -67,7 +77,7 @@ export default function NovoLaudo() {
   const handleSave = async (status = "rascunho") => {
     if (!laudoData.nome_imovel || !laudoData.endereco) {
       alert("Preencha os campos obrigatórios: Nome e Endereço do imóvel");
-      setActiveTab("informacoes");
+      setCurrentStep(0);
       return;
     }
 
@@ -160,172 +170,379 @@ export default function NovoLaudo() {
 
         <Card className="border-none shadow-xl">
           <CardContent className="p-0">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <div className="border-b border-slate-200 bg-white px-6 overflow-x-auto">
-                <TabsList className="bg-transparent h-auto p-0 gap-1">
-                  <TabsTrigger value="informacoes" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Informações</TabsTrigger>
-                  <TabsTrigger value="passeio" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Passeio</TabsTrigger>
-                  <TabsTrigger value="estacionamento" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Estacionamento</TabsTrigger>
-                  <TabsTrigger value="circulacao" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Circulação</TabsTrigger>
-                  <TabsTrigger value="rampas" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Rampas</TabsTrigger>
-                  <TabsTrigger value="escadas" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Escadas</TabsTrigger>
-                  <TabsTrigger value="portas" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Portas</TabsTrigger>
-                  <TabsTrigger value="dispositivos" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Dispositivos</TabsTrigger>
-                  <TabsTrigger value="elevadores" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Elevadores</TabsTrigger>
-                  <TabsTrigger value="sanitarios" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Sanitários</TabsTrigger>
-                  <TabsTrigger value="vestiarios" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Vestiários</TabsTrigger>
-                  <TabsTrigger value="balcoes" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Balcões</TabsTrigger>
-                  <TabsTrigger value="lavatorios" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Lavatórios</TabsTrigger>
-                  <TabsTrigger value="vagas" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Vagas PCD</TabsTrigger>
-                  <TabsTrigger value="trabalho" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Trabalho</TabsTrigger>
-                  <TabsTrigger value="refeicao" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Refeição</TabsTrigger>
-                  <TabsTrigger value="assentos" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Assentos</TabsTrigger>
-                  <TabsTrigger value="camas" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Camas/Macas</TabsTrigger>
-                  <TabsTrigger value="anexos" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Anexos</TabsTrigger>
-                  <TabsTrigger value="conclusao" className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 rounded-t-lg border-b-2 border-transparent data-[state=active]:border-blue-600">Conclusão</TabsTrigger>
-                </TabsList>
+            {/* Indicador de Progresso */}
+            <div className="bg-white border-b border-slate-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                {steps.map((step, index) => {
+                  const StepIcon = step.icon;
+                  const isActive = index === currentStep;
+                  const isCompleted = index < currentStep;
+
+                  return (
+                    <div key={step.id} className="flex items-center flex-1">
+                      <div className="flex flex-col items-center flex-1">
+                        <button
+                          onClick={() => setCurrentStep(index)}
+                          className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                            isActive 
+                              ? 'bg-blue-600 text-white shadow-lg' 
+                              : isCompleted 
+                              ? 'bg-green-500 text-white' 
+                              : 'bg-slate-200 text-slate-500'
+                          }`}
+                        >
+                          <StepIcon className="w-5 h-5" />
+                        </button>
+                        <span className={`text-xs mt-2 text-center hidden md:block ${
+                          isActive ? 'text-blue-600 font-semibold' : 'text-slate-500'
+                        }`}>
+                          {step.label}
+                        </span>
+                      </div>
+                      {index < steps.length - 1 && (
+                        <div className={`h-0.5 flex-1 mx-2 ${
+                          isCompleted ? 'bg-green-500' : 'bg-slate-200'
+                        }`} />
+                      )}
+                    </div>
+                  );
+                })}
               </div>
+              <div className="text-center md:hidden">
+                <p className="text-sm font-semibold text-slate-700">
+                  {steps[currentStep].label}
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Etapa {currentStep + 1} de {steps.length}
+                </p>
+              </div>
+            </div>
 
-              <div className="p-6 bg-white">
-                <TabsContent value="informacoes" className="mt-0">
-                  <InformacoesGerais 
-                    data={laudoData} 
-                    onChange={(data) => setLaudoData({...laudoData, ...data})} 
-                  />
-                </TabsContent>
+            <div className="p-6 bg-white min-h-[500px]">
+              {/* Etapa 1: Informações Gerais */}
+              {currentStep === 0 && (
+                <InformacoesGerais 
+                  data={laudoData} 
+                  onChange={(data) => setLaudoData({...laudoData, ...data})} 
+                />
+              )}
 
-                <TabsContent value="passeio" className="mt-0">
-                  <PasseioPublico 
-                    data={laudoData.passeio_publico} 
-                    onChange={(data) => updateLaudoData('passeio_publico', data)} 
-                  />
-                </TabsContent>
+              {/* Etapa 2: Áreas Externas */}
+              {currentStep === 1 && (
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Áreas Externas</h2>
+                    <p className="text-slate-600 mb-6">Avalie o passeio público e estacionamento</p>
+                  </div>
 
-                <TabsContent value="estacionamento" className="mt-0">
-                  <Estacionamento 
-                    data={laudoData.estacionamento} 
-                    onChange={(data) => updateLaudoData('estacionamento', data)} 
-                  />
-                </TabsContent>
+                  <div className="space-y-6">
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Passeio Público</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <PasseioPublico 
+                          data={laudoData.passeio_publico} 
+                          onChange={(data) => updateLaudoData('passeio_publico', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="circulacao" className="mt-0">
-                  <CirculacaoHorizontal 
-                    data={laudoData.circulacao_horizontal} 
-                    onChange={(data) => updateLaudoData('circulacao_horizontal', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Estacionamento</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Estacionamento 
+                          data={laudoData.estacionamento} 
+                          onChange={(data) => updateLaudoData('estacionamento', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
 
-                <TabsContent value="rampas" className="mt-0">
-                  <Rampas 
-                    data={laudoData.rampas} 
-                    onChange={(data) => updateLaudoData('rampas', data)} 
-                  />
-                </TabsContent>
+              {/* Etapa 3: Circulação e Acessos */}
+              {currentStep === 2 && (
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Circulação e Acessos</h2>
+                    <p className="text-slate-600 mb-6">Avalie corredores, rampas, escadas, portas e elevadores</p>
+                  </div>
 
-                <TabsContent value="escadas" className="mt-0">
-                  <Escadas 
-                    data={laudoData.escadas} 
-                    onChange={(data) => updateLaudoData('escadas', data)} 
-                  />
-                </TabsContent>
+                  <div className="space-y-6">
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Circulação Horizontal</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <CirculacaoHorizontal 
+                          data={laudoData.circulacao_horizontal} 
+                          onChange={(data) => updateLaudoData('circulacao_horizontal', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="portas" className="mt-0">
-                  <Portas 
-                    data={laudoData.portas} 
-                    onChange={(data) => updateLaudoData('portas', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Rampas</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Rampas 
+                          data={laudoData.rampas} 
+                          onChange={(data) => updateLaudoData('rampas', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="dispositivos" className="mt-0">
-                  <Dispositivos 
-                    data={laudoData.dispositivos} 
-                    onChange={(data) => updateLaudoData('dispositivos', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Escadas</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Escadas 
+                          data={laudoData.escadas} 
+                          onChange={(data) => updateLaudoData('escadas', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="elevadores" className="mt-0">
-                  <Elevadores 
-                    data={laudoData.elevadores} 
-                    onChange={(data) => updateLaudoData('elevadores', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Portas</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Portas 
+                          data={laudoData.portas} 
+                          onChange={(data) => updateLaudoData('portas', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="sanitarios" className="mt-0">
-                  <Sanitarios 
-                    data={laudoData.sanitarios} 
-                    onChange={(data) => updateLaudoData('sanitarios', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Elevadores</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Elevadores 
+                          data={laudoData.elevadores} 
+                          onChange={(data) => updateLaudoData('elevadores', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
 
-                <TabsContent value="vestiarios" className="mt-0">
-                  <Vestiarios 
-                    data={laudoData.vestiarios} 
-                    onChange={(data) => updateLaudoData('vestiarios', data)} 
-                  />
-                </TabsContent>
+              {/* Etapa 4: Sanitários e Vestiários */}
+              {currentStep === 3 && (
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Sanitários e Vestiários</h2>
+                    <p className="text-slate-600 mb-6">Avalie sanitários e vestiários acessíveis</p>
+                  </div>
 
-                <TabsContent value="balcoes" className="mt-0">
-                  <Balcoes 
-                    data={laudoData.balcoes} 
-                    onChange={(data) => updateLaudoData('balcoes', data)} 
-                  />
-                </TabsContent>
+                  <div className="space-y-6">
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Sanitários Acessíveis</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Sanitarios 
+                          data={laudoData.sanitarios} 
+                          onChange={(data) => updateLaudoData('sanitarios', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="lavatorios" className="mt-0">
-                  <Lavatorios 
-                    data={laudoData.lavatorios} 
-                    onChange={(data) => updateLaudoData('lavatorios', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Vestiários Acessíveis</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Vestiarios 
+                          data={laudoData.vestiarios} 
+                          onChange={(data) => updateLaudoData('vestiarios', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
 
-                <TabsContent value="vagas" className="mt-0">
-                  <VagasPCD 
-                    data={laudoData.vagas_pcd} 
-                    onChange={(data) => updateLaudoData('vagas_pcd', data)} 
-                  />
-                </TabsContent>
+              {/* Etapa 5: Mobiliário e Equipamentos */}
+              {currentStep === 4 && (
+                <div className="space-y-8">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Mobiliário e Equipamentos</h2>
+                    <p className="text-slate-600 mb-6">Avalie balcões, superfícies, vagas e demais equipamentos</p>
+                  </div>
 
-                <TabsContent value="trabalho" className="mt-0">
-                  <SuperficiesTrabalho 
-                    data={laudoData.superficies_trabalho} 
-                    onChange={(data) => updateLaudoData('superficies_trabalho', data)} 
-                  />
-                </TabsContent>
+                  <div className="space-y-6">
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Balcões de Atendimento</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Balcoes 
+                          data={laudoData.balcoes} 
+                          onChange={(data) => updateLaudoData('balcoes', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="refeicao" className="mt-0">
-                  <SuperficiesRefeicao 
-                    data={laudoData.superficies_refeicao} 
-                    onChange={(data) => updateLaudoData('superficies_refeicao', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Lavatórios e Pias</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Lavatorios 
+                          data={laudoData.lavatorios} 
+                          onChange={(data) => updateLaudoData('lavatorios', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="assentos" className="mt-0">
-                  <AssentosFixos 
-                    data={laudoData.assentos_fixos} 
-                    onChange={(data) => updateLaudoData('assentos_fixos', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Vagas para PCD</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <VagasPCD 
+                          data={laudoData.vagas_pcd} 
+                          onChange={(data) => updateLaudoData('vagas_pcd', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="camas" className="mt-0">
-                  <CamasMacas 
-                    data={laudoData.camas_macas} 
-                    onChange={(data) => updateLaudoData('camas_macas', data)} 
-                  />
-                </TabsContent>
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Superfícies de Trabalho</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <SuperficiesTrabalho 
+                          data={laudoData.superficies_trabalho} 
+                          onChange={(data) => updateLaudoData('superficies_trabalho', data)} 
+                        />
+                      </CardContent>
+                    </Card>
 
-                <TabsContent value="anexos" className="mt-0">
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Superfícies de Refeição</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <SuperficiesRefeicao 
+                          data={laudoData.superficies_refeicao} 
+                          onChange={(data) => updateLaudoData('superficies_refeicao', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Assentos Fixos</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <AssentosFixos 
+                          data={laudoData.assentos_fixos} 
+                          onChange={(data) => updateLaudoData('assentos_fixos', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Camas e Macas</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <CamasMacas 
+                          data={laudoData.camas_macas} 
+                          onChange={(data) => updateLaudoData('camas_macas', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+
+                    <Card className="border-slate-200">
+                      <CardHeader>
+                        <CardTitle>Dispositivos e Comandos</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <Dispositivos 
+                          data={laudoData.dispositivos} 
+                          onChange={(data) => updateLaudoData('dispositivos', data)} 
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
+
+              {/* Etapa 6: Anexos */}
+              {currentStep === 5 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Anexos e Documentação</h2>
+                    <p className="text-slate-600 mb-6">Adicione fotos, plantas e outros documentos</p>
+                  </div>
                   <GestaoAnexos laudoId={null} />
-                </TabsContent>
+                </div>
+              )}
 
-                <TabsContent value="conclusao" className="mt-0">
+              {/* Etapa 7: Conclusão */}
+              {currentStep === 6 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-slate-900 mb-4">Conclusão do Laudo</h2>
+                    <p className="text-slate-600 mb-6">Revise e finalize o laudo de acessibilidade</p>
+                  </div>
                   <Conclusao 
                     data={laudoData} 
                     onChange={(data) => setLaudoData({...laudoData, ...data})}
                     laudoCompleto={laudoData}
                   />
-                </TabsContent>
+                </div>
+              )}
+            </div>
+
+            {/* Navegação entre Etapas */}
+            <div className="border-t border-slate-200 bg-slate-50 p-6">
+              <div className="flex justify-between items-center">
+                <Button
+                  variant="outline"
+                  onClick={() => setCurrentStep(Math.max(0, currentStep - 1))}
+                  disabled={currentStep === 0}
+                  className="gap-2"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Anterior
+                </Button>
+
+                <div className="text-sm text-slate-600">
+                  Etapa {currentStep + 1} de {steps.length}
+                </div>
+
+                {currentStep < steps.length - 1 ? (
+                  <Button
+                    onClick={() => setCurrentStep(Math.min(steps.length - 1, currentStep + 1))}
+                    className="bg-blue-600 hover:bg-blue-700 gap-2"
+                  >
+                    Próximo
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleSave("concluido")}
+                    disabled={isSaving}
+                    className="bg-green-600 hover:bg-green-700 gap-2"
+                  >
+                    <FileText className="w-4 h-4" />
+                    Finalizar Laudo
+                  </Button>
+                )}
               </div>
-            </Tabs>
+            </div>
           </CardContent>
         </Card>
       </div>
