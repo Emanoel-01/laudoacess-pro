@@ -1,5 +1,4 @@
-
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Laudo } from "@/entities/Laudo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -19,6 +18,7 @@ import Sanitarios from "../components/laudo/Sanitarios";
 import Mobiliario from "../components/laudo/Mobiliario";
 import Conclusao from "../components/laudo/Conclusao";
 import GestaoAnexos from "../components/laudo/GestaoAnexos";
+import GestaoAmbientes from "../components/laudo/GestaoAmbientes";
 
 import Vestiarios from "../components/laudo/Vestiarios";
 import Elevadores from "../components/laudo/Elevadores";
@@ -183,6 +183,7 @@ export default function EditarLaudo() {
                   <TabsTrigger value="mobiliario">Mobiliário</TabsTrigger>
                   <TabsTrigger value="assentos">Assentos</TabsTrigger>
                   <TabsTrigger value="camas">Camas/Macas</TabsTrigger>
+                  <TabsTrigger value="ambientes">Ambientes</TabsTrigger>
                   <TabsTrigger value="anexos">Anexos</TabsTrigger>
                   <TabsTrigger value="conclusao">Conclusão</TabsTrigger>
                 </TabsList>
@@ -320,6 +321,10 @@ export default function EditarLaudo() {
                     data={laudoData.camas_macas || {}} 
                     onChange={(data) => updateLaudoData('camas_macas', data)} 
                   />
+                </TabsContent>
+
+                <TabsContent value="ambientes" className="mt-0">
+                  <GestaoAmbientes laudoId={laudoData.id} />
                 </TabsContent>
 
                 <TabsContent value="anexos" className="mt-0">
