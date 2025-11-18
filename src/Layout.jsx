@@ -1,3 +1,4 @@
+import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { FileText, LayoutDashboard, Plus, BookOpen, User } from "lucide-react";
@@ -30,6 +31,11 @@ const navigationItems = [
     title: "Meu Perfil",
     url: createPageUrl("MeuPerfil"),
     icon: User,
+  },
+  {
+    title: "Planos",
+    url: createPageUrl("Planos"),
+    icon: FileText,
   },
   {
     title: "Guia ABNT",

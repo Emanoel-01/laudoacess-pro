@@ -1,11 +1,13 @@
-import { useState } from "react";
-import { Laudo } from "@/entities/Laudo";
+import React, { useState } from "react";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { ArrowLeft, Save, FileText, Download } from "lucide-react";
+
+import LicenseCheck from "../components/laudo/LicenseCheck";
 
 import InformacoesGerais from "../components/laudo/InformacoesGerais";
 import PasseioPublico from "../components/laudo/PasseioPublico";
@@ -35,6 +37,7 @@ export default function NovoLaudo() {
   const [activeTab, setActiveTab] = useState("informacoes");
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [licenseValid, setLicenseValid] = useState(false);
   const [laudoData, setLaudoData] = useState({
     status: "rascunho",
     numero_revisao: "R00",
@@ -65,6 +68,11 @@ export default function NovoLaudo() {
   };
 
   const handleSave = async (status = "rascunho") => {
+    if (!licenseValid) {
+      alert("Sua licença não está ativa. Por favor, assine um plano para continuar.");
+      return;
+    }
+
     if (!laudoData.nome_imovel || !laudoData.endereco) {
       alert("Preencha os campos obrigatórios: Nome e Endereço do imóvel");
       setActiveTab("informacoes");
@@ -74,11 +82,14 @@ export default function NovoLaudo() {
     setIsSaving(true);
     const objetivo = `Este laudo técnico de acessibilidade tem como objetivo analisar as condições físicas das instalações do edifício localizado em ${laudoData.endereco}, ${laudoData.cidade} - ${laudoData.estado}.`;
     
-    await Laudo.create({
+    await base44.entities.Laudo.create({
       ...laudoData,
       objetivo,
       status
     });
+
+    // Incrementar contador de laudos
+    await base44.functions.invoke('incrementarContadorLaudos', {});
     
     alert(status === "concluido" ? "Laudo concluído com sucesso!" : "Laudo salvo como rascunho");
     navigate(createPageUrl("Dashboard"));
@@ -111,7 +122,9 @@ export default function NovoLaudo() {
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="max-w-6xl mx-auto">
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4">
+        <LicenseCheck onValidated={(data) => setLicenseValid(data.valida)} />
+        
+        <div className="flex items-center justify-between mb-6 flex-wrap gap-4 mt-6">
           <div className="flex items-center gap-4">
             <Button
               variant="outline"
