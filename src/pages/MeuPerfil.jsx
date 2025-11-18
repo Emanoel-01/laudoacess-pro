@@ -26,7 +26,6 @@ export default function MeuPerfil() {
     registro_tipo: "",
     registro_numero: "",
     registro_uf: "",
-    art_rrt_padrao: "",
     logo_url: "",
     assinatura_digital_url: "",
     cor_primaria: "#2563eb"
@@ -49,7 +48,6 @@ export default function MeuPerfil() {
       registro_tipo: currentUser.registro_tipo || "",
       registro_numero: currentUser.registro_numero || "",
       registro_uf: currentUser.registro_uf || "",
-      art_rrt_padrao: currentUser.art_rrt_padrao || "",
       logo_url: currentUser.logo_url || "",
       assinatura_digital_url: currentUser.assinatura_digital_url || "",
       cor_primaria: currentUser.cor_primaria || "#2563eb"
@@ -249,15 +247,6 @@ export default function MeuPerfil() {
                       maxLength={2}
                     />
                   </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Número Padrão de ART/RRT</Label>
-                  <Input
-                    value={formData.art_rrt_padrao}
-                    onChange={(e) => handleChange("art_rrt_padrao", e.target.value)}
-                    placeholder="Será pré-preenchido nos laudos"
-                  />
                 </div>
               </CardContent>
             </Card>
