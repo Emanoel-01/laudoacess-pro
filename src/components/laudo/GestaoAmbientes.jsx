@@ -40,14 +40,19 @@ export default function GestaoAmbientes({ laudoId }) {
       return;
     }
 
-    if (editingId) {
-      await base44.entities.Ambiente.update(editingId, formData);
-    } else {
-      await base44.entities.Ambiente.create({
-        ...formData,
-        laudo_id: laudoId,
-        ordem: ambientes.length + 1
-      });
+    try {
+      if (editingId) {
+        await base44.entities.Ambiente.update(editingId, formData);
+      } else {
+        await base44.entities.Ambiente.create({
+          ...formData,
+          laudo_id: laudoId,
+          ordem: ambientes.length + 1
+        });
+      }
+    } catch (error) {
+      alert(`Erro ao salvar ambiente: ${error.message}`);
+      return;
     }
 
     setFormData({ nome: "", pavimento: "", categoria: "", planta_baixa_url: "" });
