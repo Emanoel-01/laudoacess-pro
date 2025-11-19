@@ -3,6 +3,7 @@ import NovoLaudo from './pages/NovoLaudo';
 import Guia from './pages/Guia';
 import EditarLaudo from './pages/EditarLaudo';
 import MeuPerfil from './pages/MeuPerfil';
+import Templates from './pages/Templates';
 import __Layout from './Layout.jsx';
 
 
@@ -12,6 +13,7 @@ export const PAGES = {
     "Guia": Guia,
     "EditarLaudo": EditarLaudo,
     "MeuPerfil": MeuPerfil,
+    "Templates": Templates,
 }
 
 export const pagesConfig = {

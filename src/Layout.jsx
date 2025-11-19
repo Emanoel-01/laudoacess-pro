@@ -28,6 +28,11 @@ const navigationItems = [
     icon: Plus,
   },
   {
+    title: "Templates",
+    url: createPageUrl("Templates"),
+    icon: FileText,
+  },
+  {
     title: "Meu Perfil",
     url: createPageUrl("MeuPerfil"),
     icon: User,

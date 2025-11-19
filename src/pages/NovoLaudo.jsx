@@ -8,6 +8,7 @@ import { createPageUrl } from "@/utils";
 import { ArrowLeft, Save, FileText, Download, Building2, Package, ChevronLeft, ChevronRight } from "lucide-react";
 
 import InformacoesGerais from "../components/laudo/InformacoesGerais";
+import SelecaoTemplate from "../components/templates/SelecaoTemplate";
 import PasseioPublico from "../components/laudo/PasseioPublico";
 import Estacionamento from "../components/laudo/Estacionamento";
 import CirculacaoHorizontal from "../components/laudo/CirculacaoHorizontal";
@@ -37,6 +38,8 @@ export default function NovoLaudo() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [laudoId, setLaudoId] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [templateSelecionado, setTemplateSelecionado] = useState(null);
+  const [mostrarSelecaoTemplate, setMostrarSelecaoTemplate] = useState(false);
 
   const steps = [
     { id: "informacoes", label: "Informações Gerais", icon: FileText },
@@ -73,6 +76,7 @@ export default function NovoLaudo() {
     const loadLaudo = async () => {
       const urlParams = new URLSearchParams(window.location.search);
       const id = urlParams.get('id');
+      const templateId = urlParams.get('template');
       
       if (id) {
         const laudo = await base44.entities.Laudo.get(id);
@@ -81,12 +85,41 @@ export default function NovoLaudo() {
         if (laudo.ultima_etapa_visitada !== undefined) {
           setCurrentStep(laudo.ultima_etapa_visitada);
         }
+        setIsLoading(false);
+      } else if (templateId) {
+        const template = await base44.entities.Template.get(templateId);
+        setTemplateSelecionado(template);
+        aplicarTemplate(template);
+        setIsLoading(false);
+      } else {
+        setMostrarSelecaoTemplate(true);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     
     loadLaudo();
   }, []);
+
+  const aplicarTemplate = (template) => {
+    const dadosTemplate = {
+      ...laudoData,
+      tipo_edificacao: template.tipo_edificacao,
+      objetivo: template.objetivo_padrao || laudoData.objetivo,
+      ...(template.dados_padrao || {})
+    };
+    setLaudoData(dadosTemplate);
+    setTemplateSelecionado(template);
+    setMostrarSelecaoTemplate(false);
+  };
+
+  const selecionarTemplate = async (templateId) => {
+    if (templateId === 'sem_template') {
+      setMostrarSelecaoTemplate(false);
+      return;
+    }
+    const template = await base44.entities.Template.get(templateId);
+    aplicarTemplate(template);
+  };
 
   const updateLaudoData = (section, data) => {
     setLaudoData(prev => ({
@@ -156,6 +189,10 @@ export default function NovoLaudo() {
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
+  }
+
+  if (mostrarSelecaoTemplate) {
+    return <SelecaoTemplate onSelect={selecionarTemplate} />;
   }
 
   return (
