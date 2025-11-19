@@ -55,10 +55,9 @@ export default function EditarLaudo() {
       return;
     }
 
-    const laudo = await Laudo.get(id);
+    const laudo = await base44.entities.Laudo.get(id);
     setLaudoData(laudo);
     
-    // Restaurar última aba visitada
     if (laudo.ultima_aba_visitada) {
       setActiveTab(laudo.ultima_aba_visitada);
     }
@@ -73,7 +72,7 @@ export default function EditarLaudo() {
     }));
   };
 
-  const handleSave = async (status = "rascunho") => {
+  const handleSave = async (status = "rascunho", descricaoAlteracao = null) => {
     if (!laudoData.nome_imovel || !laudoData.endereco) {
       alert("Preencha os campos obrigatórios");
       setActiveTab("informacoes");
@@ -81,13 +80,34 @@ export default function EditarLaudo() {
     }
 
     setIsSaving(true);
-    await Laudo.update(laudoData.id, {
+    
+    const novoNumeroRevisao = incrementarRevisao(laudoData.numero_revisao || 'R00');
+    
+    await base44.entities.Laudo.update(laudoData.id, {
       ...laudoData,
       status,
+      numero_revisao: novoNumeroRevisao,
       ultima_aba_visitada: activeTab
     });
+    
+    const user = await base44.auth.me();
+    await base44.entities.LaudoRevisao.create({
+      laudo_id: laudoData.id,
+      numero_revisao: novoNumeroRevisao,
+      dados_laudo: { ...laudoData, status, numero_revisao: novoNumeroRevisao },
+      descricao_alteracao: descricaoAlteracao || `Atualização - ${status === 'concluido' ? 'Laudo concluído' : 'Rascunho salvo'}`,
+      autor_email: user.email,
+      autor_nome: user.full_name
+    });
+    
     alert("Laudo salvo com sucesso!");
     setIsSaving(false);
+    loadLaudo();
+  };
+
+  const incrementarRevisao = (revisaoAtual) => {
+    const numero = parseInt(revisaoAtual.substring(1)) + 1;
+    return `R${String(numero).padStart(2, '0')}`;
   };
 
   const handleGerarPDF = async () => {
