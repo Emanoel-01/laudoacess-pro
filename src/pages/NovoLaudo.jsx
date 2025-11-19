@@ -139,25 +139,55 @@ export default function NovoLaudo() {
     const objetivo = `Este laudo técnico de acessibilidade tem como objetivo analisar as condições físicas das instalações do edifício localizado em ${laudoData.endereco}, ${laudoData.cidade} - ${laudoData.estado}.`;
     
     if (laudoId) {
+      const novoNumeroRevisao = incrementarRevisao(laudoData.numero_revisao || 'R00');
+      
       await base44.entities.Laudo.update(laudoId, {
         ...laudoData,
         objetivo,
         status,
+        numero_revisao: novoNumeroRevisao,
         ultima_etapa_visitada: currentStep
+      });
+      
+      const user = await base44.auth.me();
+      await base44.entities.LaudoRevisao.create({
+        laudo_id: laudoId,
+        numero_revisao: novoNumeroRevisao,
+        dados_laudo: { ...laudoData, objetivo, status, numero_revisao: novoNumeroRevisao },
+        descricao_alteracao: status === 'concluido' ? 'Laudo concluído' : 'Rascunho atualizado',
+        autor_email: user.email,
+        autor_nome: user.full_name
       });
     } else {
       const novoLaudo = await base44.entities.Laudo.create({
         ...laudoData,
         objetivo,
         status,
+        numero_revisao: 'R00',
         ultima_etapa_visitada: currentStep
       });
       setLaudoId(novoLaudo.id);
+      
+      const user = await base44.auth.me();
+      await base44.entities.LaudoRevisao.create({
+        laudo_id: novoLaudo.id,
+        numero_revisao: 'R00',
+        dados_laudo: { ...laudoData, objetivo, status, numero_revisao: 'R00' },
+        descricao_alteracao: 'Criação do laudo',
+        autor_email: user.email,
+        autor_nome: user.full_name
+      });
     }
     
     alert(status === "concluido" ? "Laudo concluído com sucesso!" : "Laudo salvo como rascunho");
     navigate(createPageUrl("Dashboard"));
     setIsSaving(false);
+  };
+
+  const incrementarRevisao = (revisaoAtual) => {
+    const numero = parseInt(revisaoAtual.substring(1)) + 1;
+    return `R${String(numero).padStart(2, '0')}`;
+  };
   };
 
   const handleGerarPDF = async () => {

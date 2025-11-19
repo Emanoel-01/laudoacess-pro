@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Laudo } from "@/entities/Laudo";
+import { base44 } from "@/api/base44Client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -19,6 +19,7 @@ import Mobiliario from "../components/laudo/Mobiliario";
 import Conclusao from "../components/laudo/Conclusao";
 import GestaoAnexos from "../components/laudo/GestaoAnexos";
 import GestaoAmbientes from "../components/laudo/GestaoAmbientes";
+import HistoricoRevisoes from "../components/laudo/HistoricoRevisoes";
 
 import Vestiarios from "../components/laudo/Vestiarios";
 import Elevadores from "../components/laudo/Elevadores";
@@ -192,6 +193,7 @@ export default function EditarLaudo() {
                   <TabsTrigger value="camas">Camas/Macas</TabsTrigger>
                   <TabsTrigger value="ambientes">Ambientes</TabsTrigger>
                   <TabsTrigger value="anexos">Anexos</TabsTrigger>
+                  <TabsTrigger value="historico">Histórico</TabsTrigger>
                   <TabsTrigger value="conclusao">Conclusão</TabsTrigger>
                 </TabsList>
               </div>
@@ -336,6 +338,13 @@ export default function EditarLaudo() {
 
                 <TabsContent value="anexos" className="mt-0">
                   <GestaoAnexos laudoId={laudoData.id} />
+                </TabsContent>
+
+                <TabsContent value="historico" className="mt-0">
+                  <HistoricoRevisoes 
+                    laudoId={laudoData.id}
+                    onRestaurar={() => loadLaudo()}
+                  />
                 </TabsContent>
 
                 <TabsContent value="conclusao" className="mt-0">
