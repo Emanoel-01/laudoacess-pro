@@ -211,13 +211,13 @@ Retorne APENAS o JSON estruturado conforme o schema fornecido.`;
   const aplicarSugestoesIA = () => {
     if (!sugestoesIA) return;
 
-    if (onJustificativaChange) {
+    if (onJustificativaChange && sugestoesIA.justificativa) {
       onJustificativaChange(sugestoesIA.justificativa);
     }
-    if (onTipoAdaptacaoChange) {
+    if (onTipoAdaptacaoChange && sugestoesIA.tipo_adaptacao) {
       onTipoAdaptacaoChange(sugestoesIA.tipo_adaptacao);
     }
-    if (onNecessitaProjetoChange) {
+    if (onNecessitaProjetoChange && sugestoesIA.necessita_projeto !== undefined) {
       onNecessitaProjetoChange(sugestoesIA.necessita_projeto);
     }
 

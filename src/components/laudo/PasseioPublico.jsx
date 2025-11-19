@@ -3,13 +3,14 @@ import ChecklistItem from "./ChecklistItem";
 
 export default function PasseioPublico({ data, onChange }) {
   const handleItemChange = (field, subfield, value) => {
-    onChange({ 
+    const updatedData = { 
       ...data, 
       [field]: {
-        ...data[field],
+        ...(data[field] || {}),
         [subfield]: value
       }
-    });
+    };
+    onChange(updatedData);
   };
 
   return (
@@ -32,6 +33,8 @@ export default function PasseioPublico({ data, onChange }) {
         onTipoAdaptacaoChange={(value) => handleItemChange("piso_estavel", "tipo_adaptacao", value)}
         necessitaProjetoValue={data.piso_estavel?.necessita_projeto}
         onNecessitaProjetoChange={(value) => handleItemChange("piso_estavel", "necessita_projeto", value)}
+        anexosValue={data.piso_estavel?.anexos}
+        onAnexosChange={(value) => handleItemChange("piso_estavel", "anexos", value)}
       />
 
       <ChecklistItem
@@ -47,6 +50,8 @@ export default function PasseioPublico({ data, onChange }) {
         onTipoAdaptacaoChange={(value) => handleItemChange("faixa_livre", "tipo_adaptacao", value)}
         necessitaProjetoValue={data.faixa_livre?.necessita_projeto}
         onNecessitaProjetoChange={(value) => handleItemChange("faixa_livre", "necessita_projeto", value)}
+        anexosValue={data.faixa_livre?.anexos}
+        onAnexosChange={(value) => handleItemChange("faixa_livre", "anexos", value)}
       />
 
       <ChecklistItem
@@ -62,6 +67,8 @@ export default function PasseioPublico({ data, onChange }) {
         onTipoAdaptacaoChange={(value) => handleItemChange("inclinacao", "tipo_adaptacao", value)}
         necessitaProjetoValue={data.inclinacao?.necessita_projeto}
         onNecessitaProjetoChange={(value) => handleItemChange("inclinacao", "necessita_projeto", value)}
+        anexosValue={data.inclinacao?.anexos}
+        onAnexosChange={(value) => handleItemChange("inclinacao", "anexos", value)}
       />
 
       <ChecklistItem
@@ -77,6 +84,8 @@ export default function PasseioPublico({ data, onChange }) {
         onTipoAdaptacaoChange={(value) => handleItemChange("rebaixamento", "tipo_adaptacao", value)}
         necessitaProjetoValue={data.rebaixamento?.necessita_projeto}
         onNecessitaProjetoChange={(value) => handleItemChange("rebaixamento", "necessita_projeto", value)}
+        anexosValue={data.rebaixamento?.anexos}
+        onAnexosChange={(value) => handleItemChange("rebaixamento", "anexos", value)}
       />
     </div>
   );
