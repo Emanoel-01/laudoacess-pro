@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { InvokeLLM } from "@/integrations/Core";
+import { base44 } from "@/api/base44Client";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,7 +20,50 @@ export default function Conclusao({ data, onChange, laudoCompleto }) {
   const gerarConclusaoCompletaIA = async () => {
     setIsGeneratingConclusao(true);
     
-    const prompt = `Você é um arquiteto especialista em acessibilidade arquitetônica conforme ABNT NBR 9050:2020.
+    try {
+      // Buscar ambientes cadastrados no laudo
+      const ambientes = await base44.entities.Ambiente.filter({ laudo_id: laudoCompleto.id });
+      
+      // Buscar não conformidades do laudo
+      const naoConformidades = await base44.entities.NaoConformidade.filter({ laudo_id: laudoCompleto.id });
+      
+      // Preparar dados dos ambientes para o prompt
+      let ambientesInfo = "";
+      if (ambientes && ambientes.length > 0) {
+        ambientesInfo = "\n**AMBIENTES VISTORIADOS:**\n";
+        ambientes.forEach((amb, index) => {
+          ambientesInfo += `${index + 1}. ${amb.nome} (${amb.pavimento || 'sem pavimento'}) - Categoria: ${amb.categoria || 'não especificada'}\n`;
+        });
+      }
+      
+      // Preparar dados das não conformidades
+      let naoConformidadesInfo = "";
+      if (naoConformidades && naoConformidades.length > 0) {
+        naoConformidadesInfo = "\n**NÃO CONFORMIDADES IDENTIFICADAS:**\n";
+        const categorias = {};
+        
+        naoConformidades.forEach(nc => {
+          if (nc.status === 'nao') {
+            if (!categorias[nc.categoria]) {
+              categorias[nc.categoria] = [];
+            }
+            categorias[nc.categoria].push({
+              item: nc.item,
+              observacao: nc.observacao_texto,
+              pavimento: nc.pavimento
+            });
+          }
+        });
+        
+        Object.keys(categorias).forEach(cat => {
+          naoConformidadesInfo += `\n${cat.replace(/_/g, ' ').toUpperCase()}:\n`;
+          categorias[cat].forEach(item => {
+            naoConformidadesInfo += `  • ${item.item}${item.pavimento ? ' (Pavimento: ' + item.pavimento + ')' : ''}${item.observacao ? ' - ' + item.observacao : ''}\n`;
+          });
+        });
+      }
+    
+      const prompt = `Você é um arquiteto especialista em acessibilidade arquitetônica conforme ABNT NBR 9050:2020.
 
 **DADOS DO IMÓVEL VISTORIADO:**
 - Nome/Identificação: ${laudoCompleto.nome_imovel}
@@ -29,12 +72,14 @@ export default function Conclusao({ data, onChange, laudoCompleto }) {
 - Total de Pavimentos: ${laudoCompleto.total_pavimentos || "não informado"}
 - Área Total Construída: ${laudoCompleto.area_total ? laudoCompleto.area_total + " m²" : "não informada"}
 - Data da Vistoria: ${laudoCompleto.data_vistoria || "não informada"}
+${ambientesInfo}
+${naoConformidadesInfo}
 
 **CONTEXTO:**
 Este laudo foi elaborado para avaliar as condições de acessibilidade da edificação conforme os requisitos da ABNT NBR 9050:2020, legislação vigente (Lei Federal 13.146/2015 - LBI) e Decreto 5.296/2004.
 
 **TAREFA:**
-Com base EXCLUSIVAMENTE nos dados fornecidos acima sobre o imóvel, elabore uma conclusão técnica profissional e completa para o laudo de acessibilidade. NÃO invente não conformidades ou problemas. Base sua análise no tipo de edificação, uso e características informadas.
+Com base nos dados fornecidos acima sobre o imóvel, os ambientes vistoriados e as não conformidades identificadas, elabore uma conclusão técnica profissional e completa para o laudo de acessibilidade. Use APENAS as não conformidades que foram efetivamente identificadas. Se não houver não conformidades listadas, considere a edificação acessível ou parcialmente acessível.
 
 Sua análise deve ser estruturada em:
 
@@ -79,28 +124,32 @@ Sua análise deve ser estruturada em:
 
 Retorne APENAS o JSON estruturado conforme o schema fornecido.`;
 
-    const response = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      add_context_from_internet: false,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          conclusao: { type: "string" },
-          recomendacoes: { type: "string" },
-          edificacao_acessivel: { 
-            type: "string",
-            enum: ["sim", "nao", "parcialmente"]
-          },
-          adaptacao_possivel: { 
-            type: "string",
-            enum: ["sim", "nao", "parcialmente"]
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt,
+        add_context_from_internet: false,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            conclusao: { type: "string" },
+            recomendacoes: { type: "string" },
+            edificacao_acessivel: { 
+              type: "string",
+              enum: ["sim", "nao", "parcialmente"]
+            },
+            adaptacao_possivel: { 
+              type: "string",
+              enum: ["sim", "nao", "parcialmente"]
+            }
           }
         }
-      }
-    });
+      });
 
-    setSugestoesIA(response);
-    setIsGeneratingConclusao(false);
+      setSugestoesIA(response);
+    } catch (error) {
+      alert(`Erro ao gerar análise: ${error.message}`);
+    } finally {
+      setIsGeneratingConclusao(false);
+    }
   };
 
   const aplicarSugestoesIA = () => {
