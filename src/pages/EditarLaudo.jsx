@@ -20,6 +20,7 @@ import Conclusao from "../components/laudo/Conclusao";
 import GestaoAnexos from "../components/laudo/GestaoAnexos";
 import GestaoAmbientes from "../components/laudo/GestaoAmbientes";
 import HistoricoRevisoes from "../components/laudo/HistoricoRevisoes";
+import ConfiguracaoPDF from "../components/laudo/ConfiguracaoPDF";
 
 import Vestiarios from "../components/laudo/Vestiarios";
 import Elevadores from "../components/laudo/Elevadores";
@@ -41,6 +42,7 @@ export default function EditarLaudo() {
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const [laudoData, setLaudoData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showPdfConfig, setShowPdfConfig] = useState(false);
 
   useEffect(() => {
     loadLaudo();
@@ -110,10 +112,10 @@ export default function EditarLaudo() {
     return `R${String(numero).padStart(2, '0')}`;
   };
 
-  const handleGerarPDF = async () => {
+  const handleGerarPDF = async (config) => {
     setIsGeneratingPDF(true);
     
-    const response = await gerarLaudoPDF({ laudoData });
+    const response = await gerarLaudoPDF({ laudoData, config });
     
     const blob = new Blob([response.data], { type: 'application/pdf' });
     const url = window.URL.createObjectURL(blob);
@@ -161,7 +163,7 @@ export default function EditarLaudo() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={handleGerarPDF}
+              onClick={() => setShowPdfConfig(true)}
               disabled={isGeneratingPDF}
               className="gap-2"
             >
@@ -378,6 +380,13 @@ export default function EditarLaudo() {
             </Tabs>
           </CardContent>
         </Card>
+
+        <ConfiguracaoPDF
+          open={showPdfConfig}
+          onClose={() => setShowPdfConfig(false)}
+          onGenerate={handleGerarPDF}
+          laudoData={laudoData}
+        />
       </div>
     </div>
   );

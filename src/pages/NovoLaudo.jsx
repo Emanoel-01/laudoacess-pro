@@ -28,6 +28,7 @@ import CamasMacas from "../components/laudo/CamasMacas";
 import Dispositivos from "../components/laudo/Dispositivos";
 import Conclusao from "../components/laudo/Conclusao";
 import GestaoAnexos from "../components/laudo/GestaoAnexos";
+import ConfiguracaoPDF from "../components/laudo/ConfiguracaoPDF";
 
 import { gerarLaudoPDF } from "@/functions/gerarLaudoPDF";
 
@@ -40,6 +41,7 @@ export default function NovoLaudo() {
   const [isLoading, setIsLoading] = useState(true);
   const [templateSelecionado, setTemplateSelecionado] = useState(null);
   const [mostrarSelecaoTemplate, setMostrarSelecaoTemplate] = useState(false);
+  const [showPdfConfig, setShowPdfConfig] = useState(false);
 
   const steps = [
     { id: "informacoes", label: "Informações Gerais", icon: FileText },
@@ -189,7 +191,7 @@ export default function NovoLaudo() {
     return `R${String(numero).padStart(2, '0')}`;
   };
 
-  const handleGerarPDF = async () => {
+  const handleGerarPDF = async (config) => {
     if (!laudoData.nome_imovel) {
       alert("Preencha os dados básicos do laudo antes de gerar o PDF");
       return;
@@ -197,7 +199,7 @@ export default function NovoLaudo() {
 
     setIsGeneratingPDF(true);
     
-    const response = await gerarLaudoPDF({ laudoData });
+    const response = await gerarLaudoPDF({ laudoData, config });
     
     const blob = new Blob([response.data], { type: 'application/pdf' });
     const url = window.URL.createObjectURL(blob);
@@ -247,7 +249,7 @@ export default function NovoLaudo() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={handleGerarPDF}
+              onClick={() => setShowPdfConfig(true)}
               disabled={isGeneratingPDF}
               className="gap-2"
             >
@@ -651,6 +653,13 @@ export default function NovoLaudo() {
             </div>
           </CardContent>
         </Card>
+
+        <ConfiguracaoPDF
+          open={showPdfConfig}
+          onClose={() => setShowPdfConfig(false)}
+          onGenerate={handleGerarPDF}
+          laudoData={laudoData}
+        />
       </div>
     </div>
   );
