@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import React, { useState } from "react";
 import { InvokeLLM } from "@/integrations/Core";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -21,47 +20,66 @@ export default function Conclusao({ data, onChange, laudoCompleto }) {
   const gerarConclusaoCompletaIA = async () => {
     setIsGeneratingConclusao(true);
     
-    const prompt = `Você é um especialista em acessibilidade arquitetônica conforme ABNT NBR 9050:2015.
+    const prompt = `Você é um arquiteto especialista em acessibilidade arquitetônica conforme ABNT NBR 9050:2020.
 
-Com base nos dados completos do laudo de acessibilidade abaixo, gere uma ANÁLISE COMPLETA E PROFISSIONAL:
+**DADOS DO IMÓVEL VISTORIADO:**
+- Nome/Identificação: ${laudoCompleto.nome_imovel}
+- Endereço Completo: ${laudoCompleto.endereco}, ${laudoCompleto.cidade} - ${laudoCompleto.estado}
+- Classificação de Uso: ${laudoCompleto.tipo_edificacao_detalhe || laudoCompleto.tipo_edificacao || "não especificado"}
+- Total de Pavimentos: ${laudoCompleto.total_pavimentos || "não informado"}
+- Área Total Construída: ${laudoCompleto.area_total ? laudoCompleto.area_total + " m²" : "não informada"}
+- Data da Vistoria: ${laudoCompleto.data_vistoria || "não informada"}
 
-**Dados do Imóvel:**
-- Nome: ${laudoCompleto.nome_imovel}
-- Endereço: ${laudoCompleto.endereco}, ${laudoCompleto.cidade} - ${laudoCompleto.estado}
-- Tipo: ${laudoCompleto.tipo_edificacao_detalhe || laudoCompleto.tipo_edificacao}
-- Pavimentos: ${laudoCompleto.total_pavimentos || "não informado"}
-- Área Total: ${laudoCompleto.area_total || "não informada"} m²
+**CONTEXTO:**
+Este laudo foi elaborado para avaliar as condições de acessibilidade da edificação conforme os requisitos da ABNT NBR 9050:2020, legislação vigente (Lei Federal 13.146/2015 - LBI) e Decreto 5.296/2004.
 
-**Contexto da Vistoria:**
-Data: ${laudoCompleto.data_vistoria || "não informada"}
+**TAREFA:**
+Com base EXCLUSIVAMENTE nos dados fornecidos acima sobre o imóvel, elabore uma conclusão técnica profissional e completa para o laudo de acessibilidade. NÃO invente não conformidades ou problemas. Base sua análise no tipo de edificação, uso e características informadas.
 
-**Não Conformidades Identificadas:**
-[Aqui você incluiria um resumo das não conformidades por categoria]
+Sua análise deve ser estruturada em:
 
-Gere uma análise técnica profissional que inclua:
+1. **CONCLUSÃO GERAL** (250-400 palavras):
+   - Parágrafo 1: Contextualização (tipo de edificação, localização, finalidade)
+   - Parágrafo 2: Resumo do diagnóstico geral de acessibilidade (considerando o tipo de edificação)
+   - Parágrafo 3: Principais conformidades e não conformidades típicas para esse tipo de edificação
+   - Parágrafo 4: Viabilidade técnica de adequação e considerações finais
+   - Tom formal, técnico e objetivo, adequado para laudo oficial
+   - Citar sempre "ABNT NBR 9050:2020" e não outras versões
 
-1. **CONCLUSÃO GERAL** (200-400 palavras):
-   - Resumo do estado geral de acessibilidade da edificação
-   - Principais conformidades e não conformidades
-   - Avaliação da viabilidade de adaptação
-   - Tom profissional adequado para laudo técnico oficial
-
-2. **RECOMENDAÇÕES E ADEQUAÇÕES NECESSÁRIAS** (lista detalhada):
-   - Adaptações necessárias priorizadas
-   - Classificação de cada adaptação (SIM/INS/CIV)
-   - Normas ABNT NBR 9050:2015 aplicáveis
-   - Indicação de necessidade de projeto executivo quando aplicável
-   - Estimativa de prazos realistas
+2. **RECOMENDAÇÕES E ADEQUAÇÕES NECESSÁRIAS** (300-500 palavras):
+   - Liste de forma estruturada e priorizada as adaptações típicas necessárias para esse tipo de edificação
+   - Para cada recomendação, indique:
+     * Descrição clara da adequação
+     * Classificação: SIM (simples), INS (instalação) ou CIV (civil)
+     * Seção específica da NBR 9050:2020 aplicável
+     * Se necessita projeto executivo
+   - Organize por prioridade (críticas primeiro, depois altas, médias e baixas)
+   - Use marcadores (•) ou numeração para facilitar leitura
+   - Seja realista e considere as características da edificação
 
 3. **EDIFICAÇÃO É ACESSÍVEL?**
-   - Responda: "sim", "nao" ou "parcialmente"
+   Avalie objetivamente e responda:
+   - "sim": Edificação atende integralmente aos requisitos da NBR 9050:2020
+   - "parcialmente": Atende alguns requisitos mas possui não conformidades que podem ser corrigidas
+   - "nao": Não atende aos requisitos mínimos e possui barreiras significativas
 
 4. **ADAPTAÇÃO É POSSÍVEL?**
-   - Responda: "sim", "nao" ou "parcialmente"
+   Avalie a viabilidade técnica e responda:
+   - "sim": É plenamente viável adaptar a edificação
+   - "parcialmente": Algumas adaptações são viáveis mas há limitações técnicas/estruturais/legais
+   - "nao": Inviável tecnicamente ou economicamente
 
-Retorne um JSON estruturado com todos esses campos.`;
+**DIRETRIZES IMPORTANTES:**
+- Seja preciso, técnico e objetivo
+- Use APENAS "ABNT NBR 9050:2020" (não 2015 ou outras versões)
+- Baseie-se no tipo de edificação informado
+- Não seja genérico: adapte a análise ao contexto específico do imóvel
+- Evite jargões excessivos, mantenha clareza profissional
+- Não invente dados que não foram fornecidos
 
-    const response = await InvokeLLM({
+Retorne APENAS o JSON estruturado conforme o schema fornecido.`;
+
+    const response = await base44.integrations.Core.InvokeLLM({
       prompt,
       add_context_from_internet: false,
       response_json_schema: {

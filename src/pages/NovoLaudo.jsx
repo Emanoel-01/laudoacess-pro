@@ -135,7 +135,7 @@ export default function NovoLaudo() {
               <h1 className="text-2xl md:text-3xl font-bold text-slate-900">
                 Novo Laudo de Acessibilidade
               </h1>
-              <p className="text-slate-600">Preencha as informações conforme ABNT NBR 9050:2015</p>
+              <p className="text-slate-600">Preencha as informações conforme ABNT NBR 9050:2020</p>
             </div>
           </div>
           <div className="flex gap-2">

@@ -1,14 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
-import { UploadFile } from "@/integrations/Core";
-import { InvokeLLM } from "@/integrations/Core";
-import { Upload, Mic, StopCircle, Sparkles, Loader2, Check, FileText, X } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { Upload, Mic, StopCircle, Sparkles, Loader2, Check, Image as ImageIcon, FileText, X } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ChecklistItem({
@@ -29,6 +28,8 @@ export default function ChecklistItem({
   onAnexosChange
 }) {
   const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [audioChunks, setAudioChunks] = useState([]);
   const [isUploadingFiles, setIsUploadingFiles] = useState(false);
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
   const [sugestoesIA, setSugestoesIA] = useState(null);
@@ -42,7 +43,7 @@ export default function ChecklistItem({
     const novosAnexos = [];
 
     for (const file of files) {
-      const { file_url } = await UploadFile({ file });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
       const tipoArquivo = file.type.includes('image') ? 'foto' : 
                          file.type.includes('pdf') ? 'pdf' : 
                          file.type.includes('word') ? 'word' : 'outro';
@@ -70,13 +71,52 @@ export default function ChecklistItem({
     }
   };
 
-  const handleRecordAudio = () => {
-    // Implementação de gravação de áudio (simplificada)
-    setIsRecording(!isRecording);
+  const handleRecordAudio = async () => {
     if (!isRecording) {
-      alert("Gravação de áudio iniciada (funcionalidade será implementada com MediaRecorder API)");
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const chunks = [];
+
+        recorder.ondataavailable = (e) => {
+          chunks.push(e.data);
+        };
+
+        recorder.onstop = async () => {
+          const audioBlob = new Blob(chunks, { type: 'audio/webm' });
+          const audioFile = new File([audioBlob], `audio_${Date.now()}.webm`, { type: 'audio/webm' });
+          
+          setIsUploadingFiles(true);
+          const { file_url } = await base44.integrations.Core.UploadFile({ file: audioFile });
+          
+          const novoAnexo = {
+            url: file_url,
+            nome: audioFile.name,
+            tipo: 'audio'
+          };
+          
+          const todosAnexos = [...anexosLocais, novoAnexo];
+          setAnexosLocais(todosAnexos);
+          if (onAnexosChange) {
+            onAnexosChange(todosAnexos);
+          }
+          setIsUploadingFiles(false);
+          
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+      } catch (error) {
+        alert("Erro ao acessar microfone: " + error.message);
+      }
     } else {
-      alert("Gravação de áudio finalizada");
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        setMediaRecorder(null);
+        setIsRecording(false);
+      }
     }
   };
 
@@ -91,30 +131,55 @@ export default function ChecklistItem({
     // Preparar URLs de fotos para enviar à IA
     const fotosUrls = anexosLocais.filter(a => a.tipo === 'foto').map(a => a.url);
 
-    const prompt = `Você é um especialista em acessibilidade conforme ABNT NBR 9050:2015.
+    const prompt = `Você é um arquiteto especialista em acessibilidade conforme ABNT NBR 9050:2020.
 
-Item avaliado: "${label}"
-Categoria: ${categoria}
-Status: NÃO CONFORME
+**CONTEXTO DO ITEM AVALIADO:**
+- Item: "${label}"
+- Categoria: ${categoria}
+- Status de Conformidade: NÃO CONFORME
 
-Observações do profissional: ${observationValue || "Nenhuma observação textual fornecida"}
+**OBSERVAÇÕES DO PROFISSIONAL:**
+${observationValue || "Nenhuma observação textual foi fornecida."}
 
-${fotosUrls.length > 0 ? `Foram anexadas ${fotosUrls.length} foto(s) do problema identificado.` : ''}
+**EVIDÊNCIAS FOTOGRÁFICAS:**
+${fotosUrls.length > 0 ? `${fotosUrls.length} foto(s) anexada(s) documentando a não conformidade identificada.` : 'Nenhuma foto anexada.'}
 
-Com base nessas informações, forneça uma análise técnica completa:
+**TAREFA:**
+Com base EXCLUSIVAMENTE nas observações fornecidas e nas fotos anexadas (se houver), forneça uma análise técnica objetiva e precisa. NÃO invente ou suponha informações que não estejam nas observações ou fotos.
 
-1. JUSTIFICATIVA TÉCNICA detalhada citando as normas ABNT NBR 9050:2015 aplicáveis
-2. LEGENDAS para cada foto anexada (se houver), descrevendo o problema visível
-3. TIPO DE ADAPTAÇÃO necessária:
-   - SIM (Adaptação Simples: sinalização, placas, movimentação de mobiliário)
-   - INS (Instalação: barras de apoio, corrimãos, maçanetas)
-   - CIV (Civil: reforma estrutural, rampas, sanitários)
-4. NECESSITA PROJETO EXECUTIVO? (true/false)
-5. PRIORIDADE da adaptação (baixa, media, alta, critica)
+Sua análise deve conter:
 
-Retorne um JSON estruturado.`;
+1. **JUSTIFICATIVA TÉCNICA** (150-250 palavras):
+   - Descreva tecnicamente o problema identificado
+   - Cite APENAS as seções específicas da ABNT NBR 9050:2020 que estão sendo violadas
+   - Explique as implicações práticas da não conformidade para usuários de cadeira de rodas, pessoas com deficiência visual, mobilidade reduzida, etc.
+   - Use linguagem técnica profissional adequada para laudo oficial
 
-    const response = await InvokeLLM({
+2. **LEGENDAS PARA FOTOS** (se houver fotos):
+   - Para cada foto, descreva de forma técnica e objetiva o que está visível na imagem
+   - Destaque os elementos não conformes visíveis
+   - Máximo 30 palavras por legenda
+
+3. **TIPO DE ADAPTAÇÃO NECESSÁRIA**:
+   - SIM: Adaptação simples (sinalização, pintura, reorganização de mobiliário, ajustes de altura)
+   - INS: Instalação de equipamentos (barras de apoio, corrimãos, dispositivos de acionamento, portas acessíveis)
+   - CIV: Obra civil (demolição/construção de rampas, alargamento de vãos, reforma de sanitários, nivelamento de pisos)
+
+4. **NECESSITA PROJETO EXECUTIVO?**
+   - true: Quando exige projeto técnico assinado (obras civis, instalações complexas, modificações estruturais)
+   - false: Quando são ajustes simples que não exigem projeto formal
+
+5. **PRIORIDADE DA ADAPTAÇÃO**:
+   - critica: Impede totalmente o acesso ou representa risco de acidente
+   - alta: Prejudica significativamente a autonomia e segurança do usuário
+   - media: Causa desconforto ou dificuldade moderada
+   - baixa: Melhoria recomendável mas não essencial
+
+**IMPORTANTE:** Seja coerente, objetivo e baseie-se APENAS nas informações fornecidas. Evite suposições ou generalizações.
+
+Retorne APENAS o JSON estruturado conforme o schema fornecido.`;
+
+    const response = await base44.integrations.Core.InvokeLLM({
       prompt,
       file_urls: fotosUrls,
       response_json_schema: {
@@ -174,28 +239,30 @@ Retorne um JSON estruturado.`;
   return (
     <Card className="border-slate-200">
       <CardContent className="p-6 space-y-4">
-        <div className="flex items-start justify-between gap-4">
+        <div className="space-y-3">
           <Label className="text-base font-medium text-slate-900 leading-relaxed">
             {label}
           </Label>
-          <div className="flex gap-2">
-            <Select value={value || ""} onValueChange={onChange}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Avaliar" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="sim">
-                  <span className="text-green-700">✓ SIM</span>
-                </SelectItem>
-                <SelectItem value="nao">
-                  <span className="text-red-700">✗ NÃO</span>
-                </SelectItem>
-                <SelectItem value="nao_se_aplica">
-                  <span className="text-slate-500">N/A</span>
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <RadioGroup value={value || ""} onValueChange={onChange} className="flex gap-6">
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="sim" id={`${label}-sim`} />
+              <Label htmlFor={`${label}-sim`} className="text-green-700 font-medium cursor-pointer">
+                ✓ SIM
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="nao" id={`${label}-nao`} />
+              <Label htmlFor={`${label}-nao`} className="text-red-700 font-medium cursor-pointer">
+                ✗ NÃO
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <RadioGroupItem value="nao_se_aplica" id={`${label}-na`} />
+              <Label htmlFor={`${label}-na`} className="text-slate-500 font-medium cursor-pointer">
+                N/A
+              </Label>
+            </div>
+          </RadioGroup>
         </div>
 
         {value === "nao" && (
@@ -394,7 +461,7 @@ Retorne um JSON estruturado.`;
                 <Textarea
                   value={justificativaValue || ""}
                   onChange={(e) => onJustificativaChange(e.target.value)}
-                  placeholder="Justificativa técnica conforme ABNT NBR 9050:2015..."
+                  placeholder="Justificativa técnica conforme ABNT NBR 9050:2020..."
                   className="min-h-24"
                 />
               </div>
