@@ -58,6 +58,13 @@ export default function EditarLaudo() {
     }
 
     const laudo = await base44.entities.Laudo.get(id);
+    
+    if (!laudo) {
+      alert('Laudo não encontrado');
+      navigate(createPageUrl("Dashboard"));
+      return;
+    }
+    
     setLaudoData(laudo);
     
     if (laudo.ultima_aba_visitada) {
