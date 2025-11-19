@@ -56,6 +56,12 @@ export default function EditarLaudo() {
 
     const laudo = await Laudo.get(id);
     setLaudoData(laudo);
+    
+    // Restaurar última aba visitada
+    if (laudo.ultima_aba_visitada) {
+      setActiveTab(laudo.ultima_aba_visitada);
+    }
+    
     setIsLoading(false);
   };
 
@@ -76,7 +82,8 @@ export default function EditarLaudo() {
     setIsSaving(true);
     await Laudo.update(laudoData.id, {
       ...laudoData,
-      status
+      status,
+      ultima_aba_visitada: activeTab
     });
     alert("Laudo salvo com sucesso!");
     setIsSaving(false);
