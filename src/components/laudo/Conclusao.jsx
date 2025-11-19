@@ -21,11 +21,14 @@ export default function Conclusao({ data, onChange, laudoCompleto }) {
     setIsGeneratingConclusao(true);
     
     try {
-      // Buscar ambientes cadastrados no laudo
-      const ambientes = await base44.entities.Ambiente.filter({ laudo_id: laudoCompleto.id });
+      // Buscar ambientes cadastrados no laudo (apenas se o laudo já foi salvo)
+      let ambientes = [];
+      let naoConformidades = [];
       
-      // Buscar não conformidades do laudo
-      const naoConformidades = await base44.entities.NaoConformidade.filter({ laudo_id: laudoCompleto.id });
+      if (laudoCompleto.id) {
+        ambientes = await base44.entities.Ambiente.filter({ laudo_id: laudoCompleto.id });
+        naoConformidades = await base44.entities.NaoConformidade.filter({ laudo_id: laudoCompleto.id });
+      }
       
       // Preparar dados dos ambientes para o prompt
       let ambientesInfo = "";
