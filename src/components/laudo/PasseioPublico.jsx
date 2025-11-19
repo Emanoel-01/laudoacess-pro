@@ -1,3 +1,4 @@
+import React from "react";
 import ChecklistItem from "./ChecklistItem";
 
 export default function PasseioPublico({ data, onChange }) {
@@ -15,7 +16,7 @@ export default function PasseioPublico({ data, onChange }) {
     <div className="space-y-4">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-slate-900 mb-2">Passeio Público</h2>
-        <p className="text-slate-600">Avaliação conforme ABNT NBR 9050:2015</p>
+        <p className="text-slate-600">Avaliação conforme ABNT NBR 9050:2020</p>
       </div>
 
       <ChecklistItem

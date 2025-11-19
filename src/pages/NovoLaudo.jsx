@@ -35,6 +35,8 @@ export default function NovoLaudo() {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [laudoId, setLaudoId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const steps = [
     { id: "informacoes", label: "Informações Gerais", icon: FileText },
@@ -67,6 +69,22 @@ export default function NovoLaudo() {
     dispositivos: {}
   });
 
+  React.useEffect(() => {
+    const loadLaudo = async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const id = urlParams.get('id');
+      
+      if (id) {
+        const laudo = await base44.entities.Laudo.get(id);
+        setLaudoId(id);
+        setLaudoData(laudo);
+      }
+      setIsLoading(false);
+    };
+    
+    loadLaudo();
+  }, []);
+
   const updateLaudoData = (section, data) => {
     setLaudoData(prev => ({
       ...prev,
@@ -84,11 +102,20 @@ export default function NovoLaudo() {
     setIsSaving(true);
     const objetivo = `Este laudo técnico de acessibilidade tem como objetivo analisar as condições físicas das instalações do edifício localizado em ${laudoData.endereco}, ${laudoData.cidade} - ${laudoData.estado}.`;
     
-    await base44.entities.Laudo.create({
-      ...laudoData,
-      objetivo,
-      status
-    });
+    if (laudoId) {
+      await base44.entities.Laudo.update(laudoId, {
+        ...laudoData,
+        objetivo,
+        status
+      });
+    } else {
+      const novoLaudo = await base44.entities.Laudo.create({
+        ...laudoData,
+        objetivo,
+        status
+      });
+      setLaudoId(novoLaudo.id);
+    }
     
     alert(status === "concluido" ? "Laudo concluído com sucesso!" : "Laudo salvo como rascunho");
     navigate(createPageUrl("Dashboard"));
@@ -117,6 +144,14 @@ export default function NovoLaudo() {
     
     setIsGeneratingPDF(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50">
