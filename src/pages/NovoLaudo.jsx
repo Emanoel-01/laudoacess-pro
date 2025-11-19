@@ -78,6 +78,9 @@ export default function NovoLaudo() {
         const laudo = await base44.entities.Laudo.get(id);
         setLaudoId(id);
         setLaudoData(laudo);
+        if (laudo.ultima_etapa_visitada !== undefined) {
+          setCurrentStep(laudo.ultima_etapa_visitada);
+        }
       }
       setIsLoading(false);
     };
@@ -106,13 +109,15 @@ export default function NovoLaudo() {
       await base44.entities.Laudo.update(laudoId, {
         ...laudoData,
         objetivo,
-        status
+        status,
+        ultima_etapa_visitada: currentStep
       });
     } else {
       const novoLaudo = await base44.entities.Laudo.create({
         ...laudoData,
         objetivo,
-        status
+        status,
+        ultima_etapa_visitada: currentStep
       });
       setLaudoId(novoLaudo.id);
     }
