@@ -188,7 +188,6 @@ export default function NovoLaudo() {
     const numero = parseInt(revisaoAtual.substring(1)) + 1;
     return `R${String(numero).padStart(2, '0')}`;
   };
-  };
 
   const handleGerarPDF = async () => {
     if (!laudoData.nome_imovel) {
