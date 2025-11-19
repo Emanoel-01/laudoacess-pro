@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { base44 } from "@/api/base44Client";
-import { Upload, Mic, StopCircle, Sparkles, Loader2, Check, Image as ImageIcon, FileText, X } from "lucide-react";
+import { Upload, Mic, StopCircle, Sparkles, Loader2, Check, Image as ImageIcon, FileText, X, ChevronUp, ChevronDown, Edit2 } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function ChecklistItem({
@@ -35,6 +35,8 @@ export default function ChecklistItem({
   const [isGeneratingIA, setIsGeneratingIA] = useState(false);
   const [sugestoesIA, setSugestoesIA] = useState(null);
   const [anexosLocais, setAnexosLocais] = useState(anexosValue || []);
+  const [editandoLegenda, setEditandoLegenda] = useState(null);
+  const [legendaTemp, setLegendaTemp] = useState("");
 
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
@@ -70,6 +72,41 @@ export default function ChecklistItem({
     if (onAnexosChange) {
       onAnexosChange(novosAnexos);
     }
+  };
+
+  const moverAnexo = (index, direcao) => {
+    if ((direcao === 'up' && index === 0) || (direcao === 'down' && index === anexosLocais.length - 1)) {
+      return;
+    }
+
+    const novosAnexos = [...anexosLocais];
+    const novoIndex = direcao === 'up' ? index - 1 : index + 1;
+    [novosAnexos[index], novosAnexos[novoIndex]] = [novosAnexos[novoIndex], novosAnexos[index]];
+    
+    setAnexosLocais(novosAnexos);
+    if (onAnexosChange) {
+      onAnexosChange(novosAnexos);
+    }
+  };
+
+  const atualizarLegenda = (index, legenda) => {
+    const novosAnexos = [...anexosLocais];
+    novosAnexos[index] = { ...novosAnexos[index], legenda };
+    setAnexosLocais(novosAnexos);
+    if (onAnexosChange) {
+      onAnexosChange(novosAnexos);
+    }
+  };
+
+  const iniciarEdicaoLegenda = (index) => {
+    setEditandoLegenda(index);
+    setLegendaTemp(anexosLocais[index]?.legenda || "");
+  };
+
+  const salvarLegenda = (index) => {
+    atualizarLegenda(index, legendaTemp);
+    setEditandoLegenda(null);
+    setLegendaTemp("");
   };
 
   const handleRecordAudio = async () => {
@@ -326,44 +363,121 @@ Retorne APENAS o JSON estruturado conforme o schema fornecido.`;
               </div>
 
               {anexosLocais.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mt-3">
+                <div className="space-y-4 mt-4">
                   {anexosLocais.map((anexo, index) => (
-                    <div key={index} className="relative group">
-                      {anexo.tipo === 'foto' ? (
-                        <div className="relative">
-                          <img
-                            src={anexo.url}
-                            alt={anexo.nome}
-                            className="w-full h-24 object-cover rounded-lg border border-slate-200"
-                          />
-                          <Button
-                            size="icon"
-                            variant="destructive"
-                            className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                            onClick={() => removerAnexo(index)}
-                          >
-                            <X className="w-3 h-3" />
-                          </Button>
-                          {anexo.legenda && (
-                            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 rounded-b-lg">
-                              {anexo.legenda}
+                    <div key={index} className="relative border border-slate-200 rounded-lg p-3 bg-white hover:shadow-md transition-shadow">
+                      <div className="flex gap-3">
+                        {/* Preview */}
+                        <div className="flex-shrink-0">
+                          {anexo.tipo === 'foto' ? (
+                            <img
+                              src={anexo.url}
+                              alt={anexo.nome}
+                              className="w-24 h-24 object-cover rounded-lg border border-slate-200 cursor-pointer hover:opacity-80"
+                              onClick={() => window.open(anexo.url, '_blank')}
+                            />
+                          ) : (
+                            <div className="w-24 h-24 flex items-center justify-center bg-slate-100 rounded-lg border border-slate-200">
+                              <FileText className="w-8 h-8 text-slate-600" />
                             </div>
                           )}
                         </div>
-                      ) : (
-                        <div className="flex items-center gap-2 p-2 border border-slate-200 rounded-lg bg-slate-50">
-                          <FileText className="w-4 h-4 text-slate-600" />
-                          <span className="text-xs truncate flex-1">{anexo.nome}</span>
+
+                        {/* Detalhes e Legenda */}
+                        <div className="flex-1 space-y-2">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-slate-900 truncate">{anexo.nome}</p>
+                              <Badge variant="outline" className="text-xs mt-1">
+                                {anexo.tipo === 'foto' ? '📷 Foto' : anexo.tipo === 'pdf' ? '📄 PDF' : '📎 Documento'}
+                              </Badge>
+                            </div>
+                          </div>
+
+                          {/* Legenda */}
+                          {editandoLegenda === index ? (
+                            <div className="space-y-2">
+                              <Textarea
+                                value={legendaTemp}
+                                onChange={(e) => setLegendaTemp(e.target.value)}
+                                placeholder="Digite a legenda descritiva do anexo..."
+                                className="text-sm min-h-16"
+                              />
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  onClick={() => salvarLegenda(index)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  Salvar
+                                </Button>
+                                <Button
+                                  type="button"
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => setEditandoLegenda(null)}
+                                >
+                                  Cancelar
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-1">
+                              {anexo.legenda ? (
+                                <p className="text-xs text-slate-600 bg-slate-50 p-2 rounded border border-slate-200">
+                                  {anexo.legenda}
+                                </p>
+                              ) : (
+                                <p className="text-xs text-slate-400 italic">Sem legenda</p>
+                              )}
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="ghost"
+                                onClick={() => iniciarEdicaoLegenda(index)}
+                                className="h-7 text-xs"
+                              >
+                                <Edit2 className="w-3 h-3 mr-1" />
+                                {anexo.legenda ? 'Editar' : 'Adicionar'} Legenda
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Controles */}
+                        <div className="flex flex-col gap-1">
                           <Button
+                            type="button"
                             size="icon"
-                            variant="ghost"
-                            className="h-6 w-6"
+                            variant="outline"
+                            className="h-7 w-7"
+                            onClick={() => moverAnexo(index, 'up')}
+                            disabled={index === 0}
+                          >
+                            <ChevronUp className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="outline"
+                            className="h-7 w-7"
+                            onClick={() => moverAnexo(index, 'down')}
+                            disabled={index === anexosLocais.length - 1}
+                          >
+                            <ChevronDown className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            size="icon"
+                            variant="destructive"
+                            className="h-7 w-7"
                             onClick={() => removerAnexo(index)}
                           >
-                            <X className="w-3 h-3" />
+                            <X className="w-4 h-4" />
                           </Button>
                         </div>
-                      )}
+                      </div>
                     </div>
                   ))}
                 </div>
