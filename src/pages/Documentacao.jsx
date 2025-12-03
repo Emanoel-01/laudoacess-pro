@@ -426,17 +426,17 @@ export default function Documentacao() {
   };
 
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
           <div>
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">📚 Documentação Técnica</h1>
-            <p className="text-slate-600">Documentação completa do sistema LaudoAcess</p>
+            <h1 className="text-2xl md:text-4xl font-bold text-slate-900 mb-1 md:mb-2">📚 Documentação Técnica</h1>
+            <p className="text-sm md:text-base text-slate-600">Documentação completa do sistema LaudoAcess</p>
           </div>
           <Button
             onClick={downloadMarkdown}
             disabled={isGenerating || !markdown}
-            className="bg-blue-600 hover:bg-blue-700 gap-2"
+            className="bg-blue-600 hover:bg-blue-700 gap-2 w-full sm:w-auto"
           >
             <Download className="w-5 h-5" />
             Baixar Markdown
@@ -450,70 +450,70 @@ export default function Documentacao() {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
               <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-blue-900">
-                    <Database className="w-5 h-5" />
+                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
+                  <CardTitle className="flex items-center gap-2 text-blue-900 text-sm md:text-base">
+                    <Database className="w-4 h-4 md:w-5 md:h-5" />
                     Entidades
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">8</div>
-                  <p className="text-sm text-blue-700">Modelos de dados</p>
+                <CardContent className="p-3 md:p-6 pt-0">
+                  <div className="text-2xl md:text-3xl font-bold text-blue-900">8</div>
+                  <p className="text-xs md:text-sm text-blue-700">Modelos de dados</p>
                 </CardContent>
               </Card>
 
               <Card className="border-green-200 bg-gradient-to-br from-green-50 to-green-100">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-green-900">
-                    <Layers className="w-5 h-5" />
+                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
+                  <CardTitle className="flex items-center gap-2 text-green-900 text-sm md:text-base">
+                    <Layers className="w-4 h-4 md:w-5 md:h-5" />
                     Páginas
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-green-900">6</div>
-                  <p className="text-sm text-green-700">Rotas principais</p>
+                <CardContent className="p-3 md:p-6 pt-0">
+                  <div className="text-2xl md:text-3xl font-bold text-green-900">6</div>
+                  <p className="text-xs md:text-sm text-green-700">Rotas principais</p>
                 </CardContent>
               </Card>
 
               <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-purple-900">
-                    <Code className="w-5 h-5" />
+                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
+                  <CardTitle className="flex items-center gap-2 text-purple-900 text-sm md:text-base">
+                    <Code className="w-4 h-4 md:w-5 md:h-5" />
                     Componentes
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">25+</div>
-                  <p className="text-sm text-purple-700">Reutilizáveis</p>
+                <CardContent className="p-3 md:p-6 pt-0">
+                  <div className="text-2xl md:text-3xl font-bold text-purple-900">25+</div>
+                  <p className="text-xs md:text-sm text-purple-700">Reutilizáveis</p>
                 </CardContent>
               </Card>
 
               <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100">
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-orange-900">
-                    <Bot className="w-5 h-5" />
+                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
+                  <CardTitle className="flex items-center gap-2 text-orange-900 text-sm md:text-base">
+                    <Bot className="w-4 h-4 md:w-5 md:h-5" />
                     IA Features
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">3</div>
-                  <p className="text-sm text-orange-700">Recursos de IA</p>
+                <CardContent className="p-3 md:p-6 pt-0">
+                  <div className="text-2xl md:text-3xl font-bold text-orange-900">3</div>
+                  <p className="text-xs md:text-sm text-orange-700">Recursos de IA</p>
                 </CardContent>
               </Card>
             </div>
 
             <Card className="border-slate-200 shadow-xl">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <FileText className="w-6 h-6 text-blue-600" />
+              <CardHeader className="p-4 md:p-6">
+                <CardTitle className="flex items-center gap-2 text-base md:text-lg">
+                  <FileText className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
                   Preview da Documentação
                 </CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="bg-slate-900 rounded-lg p-6 overflow-auto max-h-[600px]">
-                  <pre className="text-slate-100 text-sm font-mono whitespace-pre-wrap">{markdown}</pre>
+              <CardContent className="p-3 md:p-6 pt-0">
+                <div className="bg-slate-900 rounded-lg p-3 md:p-6 overflow-auto max-h-[400px] md:max-h-[600px]">
+                  <pre className="text-slate-100 text-xs md:text-sm font-mono whitespace-pre-wrap">{markdown}</pre>
                 </div>
               </CardContent>
             </Card>
