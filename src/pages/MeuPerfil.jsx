@@ -90,6 +90,11 @@ export default function MeuPerfil() {
   };
 
   const handleSave = async () => {
+    if (user.tipo_licenca === "educacional") {
+      alert("🔒 Licença Educacional: Não é possível editar o perfil com esta licença.");
+      return;
+    }
+    
     setIsSaving(true);
     await base44.auth.updateMe(formData);
     alert("Perfil atualizado com sucesso!");
@@ -138,9 +143,9 @@ export default function MeuPerfil() {
 
         <Tabs defaultValue="pessoais" className="space-y-6">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="pessoais">Dados Pessoais</TabsTrigger>
-            <TabsTrigger value="profissionais">Dados Profissionais</TabsTrigger>
-            <TabsTrigger value="personalizacao">Personalização</TabsTrigger>
+            <TabsTrigger value="pessoais" disabled={isLicencaEducacional}>Dados Pessoais</TabsTrigger>
+            <TabsTrigger value="profissionais" disabled={isLicencaEducacional}>Dados Profissionais</TabsTrigger>
+            <TabsTrigger value="personalizacao" disabled={isLicencaEducacional}>Personalização</TabsTrigger>
             <TabsTrigger value="assinatura">Assinatura</TabsTrigger>
           </TabsList>
 
@@ -410,9 +415,39 @@ export default function MeuPerfil() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-slate-600">
-                  Informações sobre seu plano de assinatura serão exibidas aqui em breve.
-                </p>
+                {isLicencaEducacional ? (
+                  <div className="space-y-4">
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                          <FileText className="w-6 h-6 text-amber-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-amber-900 text-lg">
+                            {user.nome_licenca || "Licença Educacional"}
+                          </h3>
+                          <p className="text-sm text-amber-700">Plano Educacional Ativo</p>
+                        </div>
+                      </div>
+                      
+                      <div className="mt-4 pt-4 border-t border-amber-200">
+                        <p className="text-sm text-amber-800 mb-3">
+                          <strong>Restrições da licença educacional:</strong>
+                        </p>
+                        <ul className="text-sm text-amber-700 space-y-2">
+                          <li>🔒 Edição de dados pessoais bloqueada</li>
+                          <li>🔒 Edição de dados profissionais bloqueada</li>
+                          <li>🔒 Personalização (white-label) bloqueada</li>
+                          <li>✅ Acesso completo às funcionalidades de laudos</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-slate-600">
+                    Informações sobre seu plano de assinatura serão exibidas aqui em breve.
+                  </p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
