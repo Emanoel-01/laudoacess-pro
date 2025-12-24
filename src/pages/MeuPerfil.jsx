@@ -38,6 +38,17 @@ export default function MeuPerfil() {
   const loadUserData = async () => {
     const currentUser = await base44.auth.me();
     setUser(currentUser);
+    
+    // Define licença educacional para o e-mail específico
+    if (currentUser.email === "amorimtech2026@gmail.com" && !currentUser.tipo_licenca) {
+      await base44.auth.updateMe({
+        tipo_licenca: "educacional",
+        nome_licenca: "Licença Educacional"
+      });
+      currentUser.tipo_licenca = "educacional";
+      currentUser.nome_licenca = "Licença Educacional";
+    }
+    
     setFormData({
       empresa: currentUser.empresa || "",
       cnpj_cpf: currentUser.cnpj_cpf || "",
@@ -93,6 +104,8 @@ export default function MeuPerfil() {
     );
   }
 
+  const isLicencaEducacional = user.tipo_licenca === "educacional";
+
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50">
       <div className="max-w-4xl mx-auto">
@@ -107,10 +120,17 @@ export default function MeuPerfil() {
             </Button>
             <div>
               <h1 className="text-3xl font-bold text-slate-900">Meu Perfil</h1>
-              <p className="text-slate-600">Configure seus dados profissionais</p>
+              <p className="text-slate-600">
+                Configure seus dados profissionais
+                {isLicencaEducacional && (
+                  <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                    {user.nome_licenca || "Licença Educacional"}
+                  </span>
+                )}
+              </p>
             </div>
           </div>
-          <Button onClick={handleSave} disabled={isSaving} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleSave} disabled={isSaving || isLicencaEducacional} className="bg-blue-600 hover:bg-blue-700">
             <Save className="w-4 h-4 mr-2" />
             {isSaving ? "Salvando..." : "Salvar"}
           </Button>
@@ -133,6 +153,14 @@ export default function MeuPerfil() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {isLicencaEducacional && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-amber-800">
+                      🔒 <strong>{user.nome_licenca || "Licença Educacional"}:</strong> Seus dados pessoais estão bloqueados e não podem ser editados.
+                    </p>
+                  </div>
+                )}
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Nome Completo</Label>
@@ -151,6 +179,8 @@ export default function MeuPerfil() {
                       value={formData.telefone}
                       onChange={(e) => handleChange("telefone", e.target.value)}
                       placeholder="(11) 99999-9999"
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
                   <div className="space-y-2">
@@ -159,6 +189,8 @@ export default function MeuPerfil() {
                       value={formData.whatsapp}
                       onChange={(e) => handleChange("whatsapp", e.target.value)}
                       placeholder="(11) 99999-9999"
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
                 </div>
@@ -175,12 +207,22 @@ export default function MeuPerfil() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {isLicencaEducacional && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-amber-800">
+                      🔒 <strong>{user.nome_licenca || "Licença Educacional"}:</strong> Dados da empresa estão bloqueados e não podem ser editados.
+                    </p>
+                  </div>
+                )}
+                
                 <div className="space-y-2">
                   <Label>Empresa/Escritório</Label>
                   <Input
                     value={formData.empresa}
                     onChange={(e) => handleChange("empresa", e.target.value)}
                     placeholder="Nome da empresa ou escritório"
+                    disabled={isLicencaEducacional}
+                    className={isLicencaEducacional ? "bg-slate-50" : ""}
                   />
                 </div>
 
@@ -191,6 +233,8 @@ export default function MeuPerfil() {
                       value={formData.cnpj_cpf}
                       onChange={(e) => handleChange("cnpj_cpf", e.target.value)}
                       placeholder="00.000.000/0000-00"
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
                   <div className="space-y-2">
@@ -199,6 +243,8 @@ export default function MeuPerfil() {
                       value={formData.endereco_profissional}
                       onChange={(e) => handleChange("endereco_profissional", e.target.value)}
                       placeholder="Rua, número, bairro, cidade - UF"
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
                 </div>
@@ -210,13 +256,19 @@ export default function MeuPerfil() {
                       value={formData.formacao}
                       onChange={(e) => handleChange("formacao", e.target.value)}
                       placeholder="Ex: Arquiteto(a), Engenheiro(a) Civil"
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
 
                   <div className="space-y-2">
                     <Label>Tipo de Registro *</Label>
-                    <Select value={formData.registro_tipo} onValueChange={(val) => handleChange("registro_tipo", val)}>
-                      <SelectTrigger>
+                    <Select 
+                      value={formData.registro_tipo} 
+                      onValueChange={(val) => handleChange("registro_tipo", val)}
+                      disabled={isLicencaEducacional}
+                    >
+                      <SelectTrigger className={isLicencaEducacional ? "bg-slate-50" : ""}>
                         <SelectValue placeholder="Selecione" />
                       </SelectTrigger>
                       <SelectContent>
@@ -235,6 +287,8 @@ export default function MeuPerfil() {
                       value={formData.registro_numero}
                       onChange={(e) => handleChange("registro_numero", e.target.value)}
                       placeholder="Ex: 127687-5"
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
 
@@ -245,6 +299,8 @@ export default function MeuPerfil() {
                       onChange={(e) => handleChange("registro_uf", e.target.value)}
                       placeholder="Ex: SP"
                       maxLength={2}
+                      disabled={isLicencaEducacional}
+                      className={isLicencaEducacional ? "bg-slate-50" : ""}
                     />
                   </div>
                 </div>
