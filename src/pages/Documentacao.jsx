@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Copy, Check, FileText, Database, Network, BookOpen, ClipboardList } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 export default function Documentacao() {
   const [copiedSection, setCopiedSection] = useState(null);
@@ -22,568 +23,334 @@ export default function Documentacao() {
     complexidade: "Avançado"
   };
 
-  const guiaABNT = `**GUIA DE ACESSIBILIDADE - ABNT NBR 9050:2020**
+  const guiaAbnt = `**GUIA DE ACESSIBILIDADE LAUDOACCESS: NBR 9050:2020**
 
-═══════════════════════════════════════════════════════════════════
+Manual de referência técnica rápido para profissionais, arquitetos e fiscais.
 
-1. PASSEIO PÚBLICO E PERCURSOS
+**1. PASSEIO PÚBLICO E PERCURSOS**
 
 • Piso: Firme, estável, regular e antiderrapante em qualquer condição climática. Evitar desníveis.
 • Largura Livre: Mínimo de 1,20 m para percursos. Altura livre de 2,10 m.
-• Faixa de Serviço: 0,70 m (ideal), destinada ao mobiliário urbano e arborização.
-• Declividade: Longitudinais: até 5% (ideal). Transversais: até 2% (para drenagem).
+• Faixa de Serviço: Largura de 0,70 m (ideal), destinada ao mobiliário urbano e arborização.
+• Declividade: Longitudinais até 5% (ideal). Transversais até 2% (para drenagem).
 • Sinalização Tátil: Pisos táteis de alerta (mudança de direção, obstáculos) e direcionais (guiando o percurso).
 
 ⚠️ Não Conformidades Comuns:
-- Grelhas/Ralos com vãos superiores a 1,5 cm na direção do percurso
-- Postes/Placas/Lixeiras dentro da largura livre de 1,20 m
-- Mobiliário que invade a Faixa Livre de 1,20 m
-- Declividades maiores que 5% sem patamares de descanso
-- Sinalização tátil sem contraste de cor/luminosidade
+- Grelhas/Ralos: Vãos superiores a 1,5 cm na direção do percurso, ou desníveis abruptos não sinalizados.
+- Postes/Placas/Lixeiras: Instalados dentro da largura livre de 1,20 m, obstruindo a passagem.
+- Mobiliário que invade a Faixa Livre de 1,20 m.
+- Declividades maiores que 5% sem patamares de descanso.
+- Sinalização tátil sem contraste de cor/luminosidade com o piso adjacente.
 
-═══════════════════════════════════════════════════════════════════
+**2. CIRCULAÇÃO HORIZONTAL (CORREDORES E MANOBRAS)**
 
-2. CIRCULAÇÃO HORIZONTAL (Corredores e Manobras)
-
-• Largura Corredores: Até 4 m de extensão: 0,90 m. De 4 m a 10 m: 1,20 m. Acima de 10 m: 1,50 m.
+• Largura Corredores: Até 4m = 0,90m | 4-10m = 1,20m | Acima de 10m = 1,50m
 • Manobra 90°: Espaço livre de 1,20 m × 1,20 m para curvas de 90°.
 • Manobra 360°: Círculo de diâmetro mínimo de 1,50 m para rotação completa da cadeira de rodas.
 
 ⚠️ Não Conformidades Comuns:
-- Colunas ou móveis invadindo a largura mínima exigida
-- Raio de giro na curva de 90° obstruído por balcões ou expositores
-- Áreas de espera (halls) que não comportam o círculo de manobra livre de 1,50 m
+- Colunas ou móveis invadindo a largura mínima exigida.
+- Raio de giro na curva de 90° obstruído por balcões ou expositores.
+- Áreas de espera (halls) que não comportam o círculo de manobra livre de 1,50 m.
 
-═══════════════════════════════════════════════════════════════════
+**3. RAMPAS**
 
-3. RAMPAS
-
-• Largura Livre: Mínimo de 1,20 m para permitir a passagem segura de cadeira de rodas.
-• Inclinação (i): ≤ 8,33%. Determinado pela altura do desnível (H). Ex: H ≤ 0,50 m ⟹ i ≤ 8,33% (1:12).
-• Patamares: Comprimento mínimo de 1,20 m em cada extremidade, a cada 50 m de percurso ou mudança de direção.
-• Corrimãos: Duplos em dois níveis (0,70 m e 0,92 m). Prolongados 0,30 m além do início/fim da rampa.
+• Largura Livre: 1,20 m
+• Inclinação (i): ≤ 8,33% (determinado pela altura do desnível H. Ex: H ≤ 0,50m ⟹ i ≤ 8,33% - 1:12)
+• Patamares: Comprimento mínimo de 1,20 m em cada extremidade, a cada 50 m ou mudança de direção
+• Corrimãos: Duplos em dois níveis (0,70 m e 0,92 m). Prolongados 0,30 m além do início/fim
 
 ⚠️ Não Conformidades Comuns:
-- Largura menor que 1,20 m devido a pilares ou guarda-corpos salientes
-- Inclinação acima do limite (8,33%)
-- Patamar com inclinação longitudinal ou transversal maior que 2%
-- Corrimão interrompido na área do patamar ou sem prolongamento de 0,30 m
+- Largura menor que 1,20 m devido a pilares ou guarda-corpos salientes.
+- Inclinação acima do limite (8,33%).
+- Patamar com inclinação longitudinal/transversal maior que 2%, ou comprimento insuficiente.
+- Corrimão interrompido na área do patamar ou sem prolongamento de 0,30 m.
 
-═══════════════════════════════════════════════════════════════════
+**4. ESCADAS**
 
-4. ESCADAS
-
-• Degraus: Uniformidade: Altura (h) e profundidade (p) uniformes. Fórmula de Blondel: 60 cm ≤ (2h + p) ≤ 64 cm.
-• Corrimãos: Duplos: Alturas de 0,70 m e 0,92 m. Prolongados 0,30 m no início e fim.
-• Sinalização: Faixa de sinalização visual e tátil no piso/espelho do primeiro e último degrau.
+• Degraus: Altura (h) e profundidade (p) uniformes. Fórmula de Blondel: 60 cm ≤ (2h + p) ≤ 64 cm
+• Corrimãos: Duplos (0,70 m e 0,92 m). Prolongados 0,30 m no início e fim
+• Sinalização: Faixa visual e tátil no piso/espelho do primeiro e último degrau
 
 ⚠️ Não Conformidades Comuns:
-- Pisos ou espelhos com dimensões não uniformes no mesmo lance
-- Ausência de corrimão duplo ou corrimão muito próximo à parede
-- Sinalização visual sem contraste tátil e/ou visual claro
+- Pisos ou espelhos com dimensões não uniformes no mesmo lance.
+- Ausência de corrimão duplo ou corrimão muito próximo à parede.
+- Sinalização visual sem contraste tátil e/ou visual claro.
 
-═══════════════════════════════════════════════════════════════════
+**5. PORTAS E VÃOS**
 
-5. PORTAS E VÃOS
-
-• Largura Livre: Geral: Mínimo 0,80 m. Sanitários Acessíveis: Mínimo 0,90 m.
-• Manuseio (Maçaneta): Tipo alavanca. Altura entre 0,90 m e 1,10 m do piso.
-• Visibilidade: Faixas de contraste em portas de vidro nas alturas de 0,90 m e 1,50 m.
+• Largura Livre: Geral = 0,80m | Sanitários Acessíveis = 0,90m
+• Manuseio (Maçaneta): Tipo alavanca. Altura entre 0,90 m e 1,10 m
+• Visibilidade: Faixas de contraste em portas de vidro nas alturas de 0,90 m e 1,50 m
 
 ⚠️ Não Conformidades Comuns:
-- Folha da porta (aberta a 90°) invade o vão, reduzindo a passagem livre
-- Maçanetas redondas tipo bola que exigem torção fina
-- Portas de vidro transparentes sem sinalização visual adequada
+- Vão livre reduzido para menos de 0,80 m quando porta aberta a 90°.
+- Maçanetas redondas tipo bola que exigem torção fina.
+- Portas de vidro transparentes sem sinalização visual.
 
-═══════════════════════════════════════════════════════════════════
+**6. SANITÁRIOS ACESSÍVEIS**
 
-6. SANITÁRIOS ACESSÍVEIS
-
-• Espaço de Manobra: Área livre mínima: Círculo de 1,50 m de diâmetro.
-• Vaso Sanitário: Altura da borda superior: 0,46 m (com assento) a 0,47 m do piso acabado.
-• Barras de Apoio: Altura da barra horizontal: 0,75 m do piso. Comprimento mínimo de 0,80 m (barra lateral).
-• Lavatório: Altura Superior Máxima: 0,85 m. Altura Livre Inferior Mínima: 0,73 m (para joelhos).
+• Espaço de Manobra: Círculo de Ø 1,50 m
+• Vaso Sanitário: Altura da borda superior 0,46m (com assento) a 0,47m
+• Barras de Apoio: Altura da barra horizontal 0,75m. Comprimento mínimo de 0,80m (barra lateral)
+• Lavatório: Altura Superior Máxima 0,85m. Altura Livre Inferior Mínima 0,73m (para joelhos)
 
 ⚠️ Não Conformidades Comuns:
-- Círculo de manobra invadido pela lixeira, porta abrindo para dentro
-- Altura da bacia fora da faixa especificada
-- Barras de apoio com altura ou distância da parede não conforme
-- Lavatórios com coluna, gabinete ou sifão que impede a aproximação frontal
+- Círculo de manobra invadido pela lixeira, porta abrindo para dentro.
+- Altura da bacia fora da faixa especificada.
+- Barras instaladas com altura ou distância da parede não conforme.
+- Lavatórios com coluna/gabinete impedindo aproximação frontal.
 
-═══════════════════════════════════════════════════════════════════
+**7. ESTACIONAMENTO**
 
-7. ESTACIONAMENTO
-
-• Número de Vagas: Mínimo de 2% do total, garantindo no mínimo 1 vaga.
-• Dimensões: Vaga: 2,50 m × 5,00 m. Faixa de Transbordo: 1,20 m ao lado (compartilhável).
-• Sinalização: Horizontal (pintura no piso) e Vertical (Placa com Símbolo Internacional de Acesso - SIA).
+• Número de Vagas: Mínimo 2% do total, garantindo no mínimo 1 vaga
+• Dimensões: Vaga 2,50m × 5,00m + Faixa de Transbordo 1,20m ao lado (compartilhável)
+• Sinalização: Horizontal (pintura no piso) e Vertical (Placa com SIA)
 
 ⚠️ Não Conformidades Comuns:
-- Estacionamentos sem a vaga mínima de 1 ou sem localização preferencial
-- Faixa de transbordo inexistente ou obstruída por pilares/paredes
-- Ausência da placa vertical (SIA)
+- Estacionamentos sem a vaga mínima de 1 ou sem localização preferencial.
+- Faixa de transbordo inexistente ou obstruída.
+- Ausência da placa vertical (SIA).
 
-═══════════════════════════════════════════════════════════════════
+**8. ELEVADORES E PLATAFORMAS**
 
-8. ELEVADORES E PLATAFORMAS
-
-• Cabine: Dimensões mínimas para giro de 180°. Pelo menos um espelho na parede de fundo.
-• Botoeiras: Altura acessível (entre 0,89 m e 1,35 m). Botões com Braile e em relevo.
-• Avisos Sonoros: Indicadores sonoros (voz) para identificação de pavimento e direção.
+• Cabine: Dimensões mínimas para giro de 180°. Pelo menos um espelho na parede de fundo
+• Botoeiras: Altura acessível (0,89m a 1,35m). Botões com Braile e em relevo
+• Avisos Sonoros: Indicadores sonoros (voz) para identificação de pavimento e direção
 
 ⚠️ Não Conformidades Comuns:
-- Cabines pequenas impedindo a manobra
-- Botões sem sinalização tátil (Braile/relevo)
-- Elevador silencioso ou com som muito baixo
+- Cabines pequenas impedindo a manobra.
+- Botões sem sinalização tátil (Braile/relevo) ou fora da altura de alcance.
+- Elevador silencioso ou com som muito baixo.
 
-═══════════════════════════════════════════════════════════════════
+**9. SINALIZAÇÃO E COMUNICAÇÃO**
 
-9. SINALIZAÇÃO E COMUNICAÇÃO
-
-• Visual: Contraste de cores, tamanho e tipo de letra adequados.
-• Tátil (Braile): Uso de Braile e caracteres em relevo. Altura de alcance tátil: 0,90 m a 1,10 m.
-• Emergência: Alarmes sonoros e visuais (luzes estroboscópicas) para emergências.
+• Visual: Contraste de cores, tamanho e tipo de letra adequados. Altura de instalação acessível
+• Tátil (Braile): Uso de Braile e caracteres em relevo. Altura de alcance tátil 0,90m a 1,10m
+• Emergência: Alarmes sonoros e visuais (luzes estroboscópicas)
 
 ⚠️ Não Conformidades Comuns:
-- Painéis e placas com letras pequenas, baixo contraste
-- Sinalização tátil instalada fora da faixa de alcance tátil (0,90 m a 1,10 m)
-- Sistemas de alarme que emitem apenas som
+- Painéis com letras pequenas, baixo contraste.
+- Sinalização tátil instalada muito alta ou muito baixa (fora de 0,90m a 1,10m).
+- Sistemas de alarme que emitem apenas som.
 
-═══════════════════════════════════════════════════════════════════
-
-REFERÊNCIAS NORMATIVAS:
-• ABNT NBR 9050:2020 - Acessibilidade a edificações
+**REFERÊNCIAS NORMATIVAS:**
+• ABNT NBR 9050:2020 - Acessibilidade a edificações, mobiliário, espaços e equipamentos urbanos
 • ABNT NBR 16537/2017 - Sinalização tátil no piso
 • ABNT NM 313/2007 - Elevadores de passageiros
 • Lei Federal nº 10.098/2000 - Lei de Acessibilidade
 • Lei Federal nº 13.146/2015 - Lei Brasileira de Inclusão (LBI)
 • Decreto Federal nº 5.296/2004`;
 
-  const formularioLaudo = `**FORMULÁRIO COMPLETO - NOVO LAUDO DE ACESSIBILIDADE**
+  const formularioChecklist = `**FORMULÁRIO NOVO LAUDO DE ACESSIBILIDADE - CHECKLIST COMPLETO**
 
-═══════════════════════════════════════════════════════════════════
+O formulário de Novo Laudo está dividido em 7 etapas principais:
 
-SEÇÃO 1: INFORMAÇÕES GERAIS
-
-DADOS DO IMÓVEL:
-- Nome/Identificação do Imóvel *
-- Classificação de Uso: [Uso Público / Uso Coletivo / Uso Privado]
-- Detalhamento do Tipo (Ex: Comercial, Residencial, Educacional)
-- Endereço Completo *
-- Cidade *
-- Estado *
-- CEP
-- Total de Pavimentos
+**ETAPA 1: INFORMAÇÕES GERAIS**
+- Nome/Identificação do Imóvel
+- Endereço Completo (Logradouro, Número, Complemento, Bairro)
+- Cidade, Estado, CEP
+- Tipo de Edificação: Uso Público / Uso Coletivo / Uso Privado
+- Detalhamento do Tipo (ex: comercial, residencial, educacional)
+- Total de Pavimentos/Andares (1 a 25)
 - Área Total (m²)
 - Ano de Construção
 - Data da Vistoria
-
-PROFISSIONAL RESPONSÁVEL:
-- Nome Completo
-- Formação (Ex: Arquiteto(a), Engenheiro(a))
-- Tipo de Registro (CAU, CREA, etc)
-- Número do Registro
-- Número ART/RRT
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 2: PASSEIO PÚBLICO
-
-Questões a Avaliar:
-
-1. O piso é firme, estável e antiderrapante em qualquer condição? [SIM/NÃO/N/A]
-   - Observações
-   - Justificativa Técnica
-   - Tipo de Adaptação: [SIM/INS/CIV]
-   - Necessita Projeto Executivo? [SIM/NÃO]
-   - Anexos (Fotos, Plantas, PDFs)
-
-2. A largura livre de circulação é de no mínimo 1,20 m? [SIM/NÃO/N/A]
-
-3. A inclinação longitudinal não ultrapassa 5%? [SIM/NÃO/N/A]
-
-4. Há rampa rebaixada de calçada com largura mínima de 1,20 m? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 3: ESTACIONAMENTO
-
-1. Há estacionamento no local? [SIM/NÃO/N/A]
-
-SE SIM:
-2. Pelo menos 2% das vagas são destinadas a pessoas com deficiência/idosos (mínimo 1)? [SIM/NÃO/N/A]
-
-3. As vagas PCD têm dimensões de 2,50 m × 5,00 m + faixa de transbordo de 1,20 m? [SIM/NÃO/N/A]
-
-4. As vagas estão sinalizadas (horizontal e vertical) com o Símbolo Internacional de Acesso? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 4: CIRCULAÇÃO HORIZONTAL
-
-1. O piso é regular, firme e antiderrapante? [SIM/NÃO/N/A]
-
-2. A largura dos corredores está adequada (0,90m a 1,50m conforme extensão)? [SIM/NÃO/N/A]
-
-3. Há sinalização tátil direcional em rotas acessíveis? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 5: RAMPAS
-
-1. Há rampa(s) no local? [SIM/NÃO/N/A]
-
-SE SIM:
-2. A inclinação está dentro dos limites da norma (≤ 8,33% para H ≤ 0,50m)? [SIM/NÃO/N/A]
-
-3. A largura livre é de no mínimo 1,20 m? [SIM/NÃO/N/A]
-
-4. Há corrimãos duplos (0,70m e 0,92m) prolongados 0,30m? [SIM/NÃO/N/A]
-
-5. Há piso tátil de alerta no início e fim da rampa? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 6: ESCADAS
-
-1. Há escada(s) no local? [SIM/NÃO/N/A]
-
-SE SIM:
-2. Há corrimãos duplos (0,70m e 0,92m) prolongados 0,30m? [SIM/NÃO/N/A]
-
-3. Há sinalização visual e tátil no início e fim dos lances? [SIM/NÃO/N/A]
-
-4. As dimensões dos degraus atendem à fórmula de Blondel? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 7: PORTAS
-
-1. A largura livre dos vãos é de no mínimo 0,80 m? [SIM/NÃO/N/A]
-
-2. O espaço de aproximação junto à porta permite manobra de cadeira de rodas? [SIM/NÃO/N/A]
-
-3. As maçanetas são do tipo alavanca, instaladas entre 0,90m e 1,10m? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 8: DISPOSITIVOS E COMANDOS
-
-1. Comandos (interruptores, tomadas) estão entre 0,40m e 1,20m de altura? [SIM/NÃO/N/A]
-
-2. Dispensadores (gel, papel, sabão) estão a uma altura acessível (0,80m a 1,20m)? [SIM/NÃO/N/A]
-
-3. Bebedouros possuem altura de bica acessível (0,90m)? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 9: SANITÁRIOS
-
-1. Há sanitário acessível no local? [SIM/NÃO/N/A]
-
-SE SIM:
-2. O sanitário possui entrada independente ou está em cabine individual acessível? [SIM/NÃO/N/A]
-
-3. A largura da porta é de no mínimo 0,90 m? [SIM/NÃO/N/A]
-
-4. Há área de manobra livre (círculo de Ø 1,50 m)? [SIM/NÃO/N/A]
-
-5. O vaso sanitário está a 0,46m de altura (com assento)? [SIM/NÃO/N/A]
-
-6. Há barras de apoio junto ao vaso, instaladas a 0,75m de altura? [SIM/NÃO/N/A]
-
-7. O lavatório é suspenso, com altura máxima de 0,85m e livre inferior de 0,73m? [SIM/NÃO/N/A]
-
-8. Os acessórios (saboneteira, papeleira) estão em altura acessível? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 10: VESTIÁRIOS
-
-1. Há vestiários no local? [SIM/NÃO/N/A]
-
-SE SIM:
-2. Há vestiário acessível com entrada independente? [SIM/NÃO/N/A]
-
-3. O boxe de chuveiro tem dimensões mínimas de 0,90m × 0,95m? [SIM/NÃO/N/A]
-
-4. Há banco articulado/rebatível com 0,45m × 0,70m? [SIM/NÃO/N/A]
-
-5. Há barras de apoio junto ao chuveiro? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 11: ELEVADORES
-
-1. Há elevador(es) no edifício? [SIM/NÃO/N/A]
-
-SE SIM:
-2. A cabine tem dimensões que permitem giro de 180°? [SIM/NÃO/N/A]
-
-3. O tempo de abertura das portas é adequado (mínimo 3 segundos)? [SIM/NÃO/N/A]
-
-4. Os corrimãos estão instalados em três lados da cabine? [SIM/NÃO/N/A]
-
-5. Os botões internos e externos estão entre 0,89m e 1,35m de altura? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 12: BALCÕES DE ATENDIMENTO
-
-1. Há balcão de atendimento acessível com altura entre 0,75m e 0,85m? [SIM/NÃO/N/A]
-
-2. Há altura livre inferior de no mínimo 0,73m para aproximação? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 13: LAVATÓRIOS (fora de sanitários)
-
-1. Os lavatórios são suspensos, com altura máxima de 0,85m? [SIM/NÃO/N/A]
-
-2. Há altura livre inferior de 0,73m para joelhos? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 14: VAGAS PARA PESSOAS COM DEFICIÊNCIA
-
-1. Além das vagas de estacionamento, há vagas reservadas em outros locais (teatros, cinemas)? [SIM/NÃO/N/A]
-
-2. Estas vagas correspondem a pelo menos 1% do total? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 15: SUPERFÍCIES DE TRABALHO
-
-1. Há mesas/superfícies de trabalho acessíveis? [SIM/NÃO/N/A]
-
-2. A altura da superfície está entre 0,75m e 0,85m? [SIM/NÃO/N/A]
-
-3. Há altura livre inferior de 0,73m? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 16: SUPERFÍCIES DE REFEIÇÃO
-
-1. Há mesas de refeição acessíveis? [SIM/NÃO/N/A]
-
-2. A altura está entre 0,75m e 0,85m, com altura livre de 0,73m? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 17: MOBILIÁRIO - ASSENTOS FIXOS
-
-1. Em áreas com assentos fixos, há 5% para pessoas obesas? [SIM/NÃO/N/A]
-
-2. Há espaço para módulo de referência (0,80m × 1,20m) para cadeira de rodas? [SIM/NÃO/N/A]
-
-3. As dimensões dos assentos fixos atendem às especificações da norma? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 18: CAMAS E MACAS
-
-1. As camas/macas têm altura máxima de 0,46m para transferência? [SIM/NÃO/N/A]
-
-2. Há espaço lateral de no mínimo 0,80m para transferência lateral? [SIM/NÃO/N/A]
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 19: AMBIENTES
-
-Lista de ambientes vistoriados:
-- Cada ambiente deve ter: Nome, Pavimento, Categoria, Planta Baixa (opcional)
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 20: ANEXOS E FOTOS
-
-- Upload de fotos organizadas por categoria
-- Plantas baixas
-- Documentos complementares
-- Áudios de observações
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 21: HISTÓRICO DE REVISÕES
-
-- Controle de versões do laudo (R00, R01, R02...)
-- Descrição das alterações
-- Autor e data de cada revisão
-
-═══════════════════════════════════════════════════════════════════
-
-SEÇÃO 22: CONCLUSÃO (Gerada por IA)
-
-1. CONCLUSÃO GERAL (gerada automaticamente pela IA)
-   - Contextualização
-   - Diagnóstico geral de acessibilidade
-   - Principais conformidades e não conformidades
-   - Viabilidade técnica de adequação
-
-2. RECOMENDAÇÕES E ADEQUAÇÕES NECESSÁRIAS
-   - Lista estruturada e priorizada de adaptações
-   - Classificação (SIM/INS/CIV)
-   - Seção da NBR 9050:2020 aplicável
-   - Necessidade de projeto executivo
-
-3. EDIFICAÇÃO É ACESSÍVEL?
-   - [SIM / PARCIALMENTE / NÃO]
-
-4. ADAPTAÇÃO É POSSÍVEL?
-   - [SIM / PARCIALMENTE / NÃO]
-
-═══════════════════════════════════════════════════════════════════
-
-OBSERVAÇÕES IMPORTANTES:
-
-• Todos os itens marcados como "NÃO" geram automaticamente não conformidades
-• A IA analisa fotos e observações para gerar justificativas técnicas
-• As justificativas seguem a ABNT NBR 9050:2020
-• Cada não conformidade recebe classificação de prioridade (Baixa/Média/Alta/Crítica)
-• O sistema sugere tipo de adaptação necessária para correção
-• Histórico completo de revisões é mantido automaticamente`;
-
-  const tabelasBanco = `**TABELAS E CAMPOS DO BANCO DE DADOS:**
+- Dados do Responsável Técnico:
+  * Nome
+  * Formação (Arquiteto(a), Engenheiro(a), etc.)
+  * Tipo de Registro (CAU, CREA, Outro)
+  * Número do Registro
+  * UF do Registro
+  * Número ART/RRT
+  * URL da Assinatura Digital
+
+**ETAPA 2: ÁREAS EXTERNAS**
+
+**2.1 PASSEIO PÚBLICO**
+✓ O piso é firme, estável, regular e antiderrapante?
+✓ A largura livre de circulação é de no mínimo 1,20m?
+✓ A inclinação transversal é de no máximo 2%?
+✓ Há rebaixamento de calçada (rampa) nas travessias?
+
+**2.2 ESTACIONAMENTO**
+✓ Existe estacionamento?
+✓ Há vagas reservadas para PCD e idosos (2% do total, mínimo 1)?
+✓ As vagas PCD possuem dimensões mínimas (2,50m × 5,00m)?
+✓ Há sinalização horizontal e vertical adequada?
+
+**ETAPA 3: CIRCULAÇÃO E ACESSOS**
+
+**3.1 CIRCULAÇÃO HORIZONTAL**
+✓ O piso interno é regular, firme e antiderrapante?
+✓ A largura dos corredores atende aos requisitos (0,90m a 1,50m conforme extensão)?
+✓ Há piso tátil direcional nos corredores?
+
+**3.2 RAMPAS**
+✓ Existe rampa no imóvel?
+✓ A inclinação está conforme NBR 9050 (≤ 8,33%)?
+✓ A largura livre é de no mínimo 1,20m?
+✓ Há corrimãos duplos em duas alturas (0,70m e 0,92m)?
+✓ Há piso tátil de alerta no início e fim da rampa?
+
+**3.3 ESCADAS**
+✓ Existe escada no imóvel?
+✓ Há corrimãos em ambos os lados?
+✓ Há sinalização tátil e visual nos degraus?
+✓ As dimensões dos degraus são uniformes e atendem à fórmula de Blondel?
+
+**3.4 PORTAS**
+✓ As portas possuem vão livre mínimo de 0,80m?
+✓ As maçanetas são tipo alavanca?
+✓ Estão em altura acessível (0,90m a 1,10m)?
+
+**3.5 ELEVADORES**
+✓ Existe elevador no imóvel?
+✓ A cabine possui dimensões adequadas para giro de 180° da cadeira de rodas?
+✓ As botoeiras estão em altura acessível (0,89m a 1,35m)?
+✓ Os botões possuem identificação em Braile?
+✓ Há indicadores sonoros e visuais de pavimento?
+
+**ETAPA 4: SANITÁRIOS E VESTIÁRIOS**
+
+**4.1 SANITÁRIOS ACESSÍVEIS**
+✓ Existe sanitário acessível?
+✓ Há área de manobra livre (círculo de Ø 1,50m)?
+✓ A altura do vaso sanitário é adequada (0,46m a 0,47m)?
+✓ Há barras de apoio laterais e de fundo?
+✓ O lavatório possui altura adequada (máx. 0,85m) e área livre inferior (mín. 0,73m)?
+
+**4.2 VESTIÁRIOS ACESSÍVEIS**
+✓ Existem vestiários no imóvel?
+✓ Há entrada independente ou localização que garante privacidade?
+✓ O boxe do chuveiro possui dimensões mínimas (0,90m × 0,95m)?
+✓ Há banco articulado/dobrável?
+✓ Há barras de apoio?
+
+**ETAPA 5: MOBILIÁRIO E EQUIPAMENTOS**
+
+**5.1 BALCÕES DE ATENDIMENTO**
+✓ Há balcão com altura máxima de 0,90m para atendimento prioritário?
+✓ Há área de aproximação frontal (largura 0,80m × profundidade 1,20m)?
+
+**5.2 LAVATÓRIOS E PIAS**
+✓ A altura superior do lavatório é de no máximo 0,85m?
+✓ A altura livre inferior é de no mínimo 0,73m (para joelhos)?
+✓ Há torneiras de fácil manuseio (alavanca, sensor)?
+
+**5.3 VAGAS PARA PCD**
+✓ Existe estacionamento com mais de 10 vagas?
+✓ Há 3% do total de vagas reservadas para PCD (mínimo 1)?
+✓ As dimensões são de 5,50m × 2,50m com área de desembarque zebrada de 1,20m?
+✓ Há sinalização vertical com SIA e horizontal no piso?
+
+**5.4 SUPERFÍCIES DE TRABALHO**
+✓ Há superfícies com altura livre inferior de 0,73m e profundidade de 0,50m?
+✓ A altura do tampo está entre 0,75m e 0,85m?
+✓ A largura permite aproximação frontal de M.R. (0,80m × 1,20m)?
+
+**5.5 SUPERFÍCIES DE REFEIÇÃO**
+✓ Há superfícies com altura livre inferior de 0,73m e profundidade de 0,50m?
+✓ A altura do tampo está entre 0,75m e 0,85m?
+✓ Há 5% das mesas adaptadas e sinalizadas com SIA?
+
+**5.6 ASSENTOS FIXOS**
+✓ Há assentos para pessoa obesa (largura mínima 0,75m, espaço 1,20m × 0,80m)?
+✓ Há módulo de referência livre (0,80m × 1,20m) para P.M.R.?
+✓ As dimensões dos assentos fixos permitem transferência lateral?
+
+**5.7 CAMAS E MACAS**
+✓ As camas/macas possuem altura máxima de 0,46m (para transferência)?
+✓ Há área livre lateral mínima de 0,80m para transferência de cadeira de rodas?
+
+**5.8 DISPOSITIVOS E COMANDOS**
+✓ Dispositivos de comando (interruptores, tomadas) estão entre 0,40m e 1,20m?
+✓ Dispensers (gel, papel, sabonete) estão em altura acessível (0,80m a 1,20m)?
+✓ Bebedouros possuem bica a no máximo 0,90m de altura?
+
+**ETAPA 6: ANEXOS**
+- Upload de fotos, plantas baixas, documentos PDF, Word, Excel
+- Categorização por tipo (passeio, estacionamento, circulação, etc.)
+- Descrição e pavimento/andar de cada anexo
+
+**ETAPA 7: CONCLUSÃO**
+- Geração automática com IA da Conclusão Geral
+- Geração automática das Recomendações e Adequações Necessárias
+- Avaliação: A edificação é acessível? (Sim / Não / Parcialmente)
+- Avaliação: É possível adaptar? (Sim / Não / Parcialmente)
+- Campos editáveis para ajustes manuais`;
+
+  const tabelasBanco = `**TABELAS DO BANCO DE DADOS:**
 
 • **User** (Entidade padrão Base44 com campos adicionais):
-  - id, created_date, updated_date, created_by, full_name, email, role (campos padrão)
-  - empresa: string
-  - cnpj_cpf: string
-  - telefone: string
-  - whatsapp: string
-  - endereco_profissional: string
-  - formacao: string
-  - registro_tipo: enum ["CAU", "CREA", "Outro"]
-  - registro_numero: string
-  - registro_uf: string
-  - logo_url: string
-  - assinatura_digital_url: string
-  - cor_primaria: string
-  - tipo_licenca: enum ["completa", "educacional"]
-  - nome_licenca: string
+  - id, created_date, updated_date, created_by, full_name, email, role
+  - empresa, cnpj_cpf, telefone, whatsapp
+  - endereco_profissional, formacao
+  - registro_tipo, registro_numero, registro_uf
+  - logo_url, assinatura_digital_url, cor_primaria
+  - tipo_licenca, nome_licenca
 
 • **Laudo**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - nome_imovel: string
-  - endereco: string
-  - cidade: string
-  - estado: string
-  - cep: string
-  - tipo_edificacao: enum ["uso_publico", "uso_coletivo", "uso_privado"]
-  - tipo_edificacao_detalhe: string
-  - total_pavimentos: number
-  - area_total: number
-  - ano_construcao: number
-  - data_vistoria: string (formato data)
-  - responsavel_nome: string
-  - responsavel_formacao: string
-  - responsavel_registro: string
-  - responsavel_numero_registro: string
-  - responsavel_art_rrt: string
-  - responsavel_assinatura_url: string
-  - status: enum ["rascunho", "em_andamento", "concluido"]
-  - objetivo: string
-  - conclusao: string
-  - conclusao_gerada_ia: string
-  - recomendacoes: string
-  - recomendacoes_gerada_ia: string
-  - edificacao_acessivel: enum ["sim", "nao", "parcialmente"]
-  - edificacao_acessivel_ia: string
-  - adaptacao_possivel: enum ["sim", "nao", "parcialmente"]
-  - adaptacao_possivel_ia: string
-  - numero_revisao: string
-  - ultima_etapa_visitada: number
-  - ultima_aba_visitada: string
+  - id, created_date, updated_date, created_by
+  - nome_imovel, endereco, cidade, estado, cep
+  - tipo_edificacao, tipo_edificacao_detalhe
+  - total_pavimentos, area_total, ano_construcao, data_vistoria
+  - responsavel_nome, responsavel_formacao, responsavel_registro
+  - responsavel_numero_registro, responsavel_art_rrt, responsavel_assinatura_url
+  - status, objetivo, conclusao, conclusao_gerada_ia
+  - recomendacoes, recomendacoes_gerada_ia
+  - edificacao_acessivel, edificacao_acessivel_ia
+  - adaptacao_possivel, adaptacao_possivel_ia
+  - numero_revisao, ultima_etapa_visitada, ultima_aba_visitada
 
 • **Ambiente**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - laudo_id: string
-  - nome: string
-  - pavimento: string
-  - categoria: string (enum)
-  - planta_baixa_url: string
-  - ordem: number
+  - id, created_date, updated_date, created_by
+  - laudo_id, nome, pavimento, categoria
+  - planta_baixa_url, ordem
 
 • **LaudoRevisao**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - laudo_id: string
-  - numero_revisao: string
-  - dados_laudo: object
-  - descricao_alteracao: string
-  - autor_email: string
-  - autor_nome: string
+  - id, created_date, updated_date, created_by
+  - laudo_id, numero_revisao, dados_laudo
+  - descricao_alteracao, autor_email, autor_nome
 
 • **Anexo**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - laudo_id: string
-  - tipo: enum ["foto", "pdf", "word", "excel", "planta", "outro"]
-  - url: string
-  - nome_arquivo: string
-  - categoria: string (enum)
-  - pavimento: string
-  - descricao: string
-  - ordem: number
+  - id, created_date, updated_date, created_by
+  - laudo_id, tipo, url, nome_arquivo
+  - categoria, pavimento, descricao, ordem
 
 • **Template**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - nome: string
-  - tipo_edificacao: enum ["uso_publico", "uso_coletivo", "uso_privado"]
-  - descricao: string
-  - objetivo_padrao: string
-  - secoes_ativas: array of string
-  - dados_padrao: object
-  - is_padrao: boolean
+  - id, created_date, updated_date, created_by
+  - nome, tipo_edificacao, descricao
+  - objetivo_padrao, secoes_ativas, dados_padrao, is_padrao
 
 • **NaoConformidade**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - laudo_id: string
-  - ambiente_id: string
-  - referencia_item_laudo: string
-  - categoria: string (enum)
-  - item: string
-  - pavimento: string
-  - status: enum ["sim", "nao", "nao_se_aplica"]
-  - observacao_audio_id: string
-  - observacao_texto: string
-  - justificativa: string
-  - justificativa_gerada_ia: string
-  - tipo_adaptacao: enum ["SIM", "INS", "CIV", ""]
-  - tipo_adaptacao_ia: string
-  - necessita_projeto: boolean
-  - necessita_projeto_ia: boolean
-  - prioridade: enum ["baixa", "media", "alta", "critica", ""]
-  - prioridade_ia: string
+  - id, created_date, updated_date, created_by
+  - laudo_id, ambiente_id, referencia_item_laudo
+  - categoria, item, pavimento, status
+  - observacao_audio_id, observacao_texto
+  - justificativa, justificativa_gerada_ia
+  - tipo_adaptacao, tipo_adaptacao_ia
+  - necessita_projeto, necessita_projeto_ia
+  - prioridade, prioridade_ia
 
 • **ItemNorma**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - versao_norma: enum ["2015", "2020"]
-  - categoria: string (enum)
-  - referencia_item: string
-  - descricao: string
-  - criterio_aceite: string
-  - secao_norma: string
-  - imagem_referencia_url: string
-  - ordem: number
-  - obrigatorio: boolean
-  - aplicavel_a: array of enum
+  - id, created_date, updated_date, created_by
+  - versao_norma, categoria, referencia_item
+  - descricao, criterio_aceite, secao_norma
+  - imagem_referencia_url, ordem, obrigatorio, aplicavel_a
 
 • **Foto**:
-  - id, created_date, updated_date, created_by (campos padrão)
-  - laudo_id: string
-  - url: string
-  - pavimento: string
-  - descricao: string
-  - ordem: number
-  - categoria: string (enum)`;
+  - id, created_date, updated_date, created_by
+  - laudo_id, url, pavimento
+  - descricao, ordem, categoria`;
 
-  const schemaSql = `-- DDL para as entidades do aplicativo LaudoAcess
+  const schemaSql = `-- DDL Completo para as entidades do aplicativo LaudoAcess
 
--- Tabela: User (Usuários do sistema - entidade padrão Base44 com campos estendidos)
 CREATE TABLE User (
-    id VARCHAR(36) PRIMARY KEY, -- UUID gerado automaticamente
+    id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    created_by VARCHAR(255), -- Email do usuário que criou o registro
+    created_by VARCHAR(255),
     full_name VARCHAR(255),
     email VARCHAR(255) UNIQUE,
     role ENUM('admin', 'user') DEFAULT 'user',
@@ -603,7 +370,6 @@ CREATE TABLE User (
     nome_licenca VARCHAR(255)
 );
 
--- Tabela: Laudo (Relatórios de Acessibilidade)
 CREATE TABLE Laudo (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -641,7 +407,6 @@ CREATE TABLE Laudo (
     ultima_aba_visitada VARCHAR(50)
 );
 
--- Tabela: Ambiente (Ambientes vistoriados dentro de um laudo)
 CREATE TABLE Ambiente (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -656,7 +421,6 @@ CREATE TABLE Ambiente (
     FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
 );
 
--- Tabela: LaudoRevisao (Histórico de revisões de um laudo)
 CREATE TABLE LaudoRevisao (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -671,7 +435,6 @@ CREATE TABLE LaudoRevisao (
     FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
 );
 
--- Tabela: Anexo (Arquivos anexados a um laudo)
 CREATE TABLE Anexo (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -688,7 +451,6 @@ CREATE TABLE Anexo (
     FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
 );
 
--- Tabela: Template (Modelos pré-definidos para criação de laudos)
 CREATE TABLE Template (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -703,7 +465,6 @@ CREATE TABLE Template (
     is_padrao BOOLEAN DEFAULT FALSE
 );
 
--- Tabela: NaoConformidade (Itens não conformes identificados na vistoria)
 CREATE TABLE NaoConformidade (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -730,7 +491,6 @@ CREATE TABLE NaoConformidade (
     FOREIGN KEY (ambiente_id) REFERENCES Ambiente(id) ON DELETE SET NULL
 );
 
--- Tabela: ItemNorma (Itens de checklist baseados na ABNT NBR 9050)
 CREATE TABLE ItemNorma (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -748,7 +508,6 @@ CREATE TABLE ItemNorma (
     aplicavel_a JSONB
 );
 
--- Tabela: Foto (Fotos tiradas durante a vistoria)
 CREATE TABLE Foto (
     id VARCHAR(36) PRIMARY KEY,
     created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -763,15 +522,13 @@ CREATE TABLE Foto (
     FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
 );`;
 
-  const erdDescricao = `**DIAGRAMA DE ENTIDADE-RELACIONAMENTO (ERD) E RELAÇÕES:**
+  const erdDescricao = `**DIAGRAMA DE RELAÇÕES (ERD):**
 
 As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N):
 
 1. **User (Usuário)**:
    • 1:N Laudo: Um User pode criar muitos Laudos
-   • 1:N Ambiente: Um User pode criar muitos Ambientes
-   • 1:N LaudoRevisao: Um User pode criar muitas Revisões
-   • 1:N Anexo, Template, NaoConformidade, ItemNorma, Foto
+   • 1:N Ambiente, LaudoRevisao, Anexo, Template, NaoConformidade, ItemNorma, Foto
 
 2. **Laudo**:
    • 1:N Ambiente: Um Laudo pode conter muitos Ambientes
@@ -789,8 +546,22 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
    • Não possui FK diretas, mas referencia_item é usado em NaoConformidade
 
 **Constraints e Integridade:**
-• ON DELETE CASCADE: Quando um Laudo é excluído, todos os registros relacionados (Ambientes, Revisões, Anexos, Não Conformidades, Fotos) são automaticamente excluídos.
-• ON DELETE SET NULL: Quando um Ambiente é excluído, as Não Conformidades associadas têm ambiente_id definido como NULL, mas não são excluídas.`;
+• ON DELETE CASCADE: Quando um Laudo é excluído, todos os registros relacionados são automaticamente excluídos
+• ON DELETE SET NULL: Quando um Ambiente é excluído, as Não Conformidades têm ambiente_id = NULL`;
+
+  const conteudoCompleto = `${prdData.nome}
+
+${prdData.descricao}
+
+Indústria: ${prdData.industria}
+Público-alvo: ${prdData.publicoAlvo}
+Complexidade: ${prdData.complexidade}
+
+${guiaAbnt}
+
+${formularioChecklist}
+
+${tabelasBanco}`;
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50">
@@ -798,7 +569,7 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-slate-900 mb-3">📚 Documentação Técnica Completa</h1>
           <p className="text-slate-600 text-lg">
-            Documentação completa do sistema LaudoAcess - PRD, Guia ABNT, Formulário, Banco de Dados e ERD
+            Documentação completa do sistema LaudoAcess: PRD, Guia ABNT NBR 9050:2020, Formulário e Banco de Dados
           </p>
           <Badge className="mt-3 bg-amber-100 text-amber-800 border-amber-300">
             ⚠️ Apenas para uso administrativo e de desenvolvimento
@@ -806,7 +577,7 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
         </div>
 
         <Tabs defaultValue="prd" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 lg:grid-cols-5 bg-white shadow-sm">
+          <TabsList className="grid w-full grid-cols-5 bg-white shadow-sm">
             <TabsTrigger value="prd" className="gap-2">
               <FileText className="w-4 h-4" />
               PRD
@@ -821,138 +592,82 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
             </TabsTrigger>
             <TabsTrigger value="database" className="gap-2">
               <Database className="w-4 h-4" />
-              Banco de Dados
+              Banco
             </TabsTrigger>
             <TabsTrigger value="erd" className="gap-2">
               <Network className="w-4 h-4" />
-              Relações (ERD)
+              ERD
             </TabsTrigger>
           </TabsList>
 
           {/* TAB: PRD */}
           <TabsContent value="prd">
-            <div className="space-y-6">
-              <Card className="border-none shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
-                  <CardTitle className="flex items-center justify-between">
-                    <span>Product Requirement Document (PRD)</span>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => copyToClipboard(
-                        `Nome: ${prdData.nome}\n\nDescrição: ${prdData.descricao}\n\nIndústria: ${prdData.industria}\n\nPúblico-alvo: ${prdData.publicoAlvo}\n\nComplexidade: ${prdData.complexidade}\n\n${tabelasBanco}`,
-                        'prd-completo'
-                      )}
-                    >
-                      {copiedSection === 'prd-completo' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            <Card className="border-none shadow-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-700 text-white">
+                <CardTitle className="flex items-center justify-between">
+                  <span>Product Requirement Document (PRD)</span>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => copyToClipboard(conteudoCompleto, 'prd-completo')}
+                  >
+                    {copiedSection === 'prd-completo' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-6 space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold text-slate-900">Nome do Aplicativo</h3>
+                    <Button variant="ghost" size="sm" onClick={() => copyToClipboard(prdData.nome, 'nome')}>
+                      {copiedSection === 'nome' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </Button>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-6 space-y-6">
+                  </div>
+                  <p className="text-slate-700 bg-slate-50 p-4 rounded-lg font-semibold text-xl">{prdData.nome}</p>
+                </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-bold text-slate-900">Descrição Detalhada</h3>
+                    <Button variant="ghost" size="sm" onClick={() => copyToClipboard(prdData.descricao, 'descricao')}>
+                      {copiedSection === 'descricao' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </Button>
+                  </div>
+                  <p className="text-slate-700 bg-slate-50 p-4 rounded-lg leading-relaxed text-justify">{prdData.descricao}</p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-bold text-slate-900">Nome do Aplicativo</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(prdData.nome, 'nome')}
-                      >
-                        {copiedSection === 'nome' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg font-semibold text-xl">
-                      {prdData.nome}
-                    </p>
+                    <h3 className="text-sm font-bold text-slate-900 mb-2">Indústria</h3>
+                    <p className="text-slate-700 bg-blue-50 p-3 rounded-lg text-sm">{prdData.industria}</p>
                   </div>
-
                   <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-bold text-slate-900">Descrição Detalhada</h3>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(prdData.descricao, 'descricao')}
-                      >
-                        {copiedSection === 'descricao' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                      </Button>
-                    </div>
-                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg leading-relaxed text-justify">
-                      {prdData.descricao}
-                    </p>
+                    <h3 className="text-sm font-bold text-slate-900 mb-2">Público-alvo</h3>
+                    <p className="text-slate-700 bg-green-50 p-3 rounded-lg text-sm">{prdData.publicoAlvo}</p>
                   </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-bold text-slate-900">Indústria</h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyToClipboard(prdData.industria, 'industria')}
-                        >
-                          {copiedSection === 'industria' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        </Button>
-                      </div>
-                      <p className="text-slate-700 bg-blue-50 p-3 rounded-lg text-sm">
-                        {prdData.industria}
-                      </p>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-bold text-slate-900">Público-alvo</h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyToClipboard(prdData.publicoAlvo, 'publico')}
-                        >
-                          {copiedSection === 'publico' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        </Button>
-                      </div>
-                      <p className="text-slate-700 bg-green-50 p-3 rounded-lg text-sm">
-                        {prdData.publicoAlvo}
-                      </p>
-                    </div>
-
-                    <div>
-                      <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-sm font-bold text-slate-900">Complexidade</h3>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => copyToClipboard(prdData.complexidade, 'complexidade')}
-                        >
-                          {copiedSection === 'complexidade' ? <Check className="w-3 h-3" /> : <Copy className="w-3 h-3" />}
-                        </Button>
-                      </div>
-                      <p className="text-slate-700 bg-purple-50 p-3 rounded-lg text-sm font-semibold">
-                        {prdData.complexidade}
-                      </p>
-                    </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 mb-2">Complexidade</h3>
+                    <p className="text-slate-700 bg-purple-50 p-3 rounded-lg text-sm font-semibold">{prdData.complexidade}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           {/* TAB: GUIA ABNT */}
           <TabsContent value="guia">
             <Card className="border-none shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white">
+              <CardHeader className="bg-gradient-to-r from-amber-600 to-amber-700 text-white">
                 <CardTitle className="flex items-center justify-between">
                   <span>Guia de Acessibilidade ABNT NBR 9050:2020</span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => copyToClipboard(guiaABNT, 'guia')}
-                  >
+                  <Button variant="secondary" size="sm" onClick={() => copyToClipboard(guiaAbnt, 'guia')}>
                     {copiedSection === 'guia' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <pre className="text-slate-700 bg-slate-50 p-6 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap font-mono max-h-[600px] overflow-y-auto leading-relaxed">
-                  {guiaABNT}
+                <pre className="text-slate-700 bg-slate-50 p-6 rounded-lg text-sm leading-relaxed whitespace-pre-wrap max-h-[600px] overflow-y-auto">
+                  {guiaAbnt}
                 </pre>
               </CardContent>
             </Card>
@@ -963,19 +678,15 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
             <Card className="border-none shadow-lg">
               <CardHeader className="bg-gradient-to-r from-purple-600 to-purple-700 text-white">
                 <CardTitle className="flex items-center justify-between">
-                  <span>Formulário Completo - Novo Laudo</span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => copyToClipboard(formularioLaudo, 'formulario')}
-                  >
+                  <span>Formulário Novo Laudo - Checklist Completo</span>
+                  <Button variant="secondary" size="sm" onClick={() => copyToClipboard(formularioChecklist, 'formulario')}>
                     {copiedSection === 'formulario' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <pre className="text-slate-700 bg-slate-50 p-6 rounded-lg text-xs overflow-x-auto whitespace-pre-wrap font-mono max-h-[600px] overflow-y-auto leading-relaxed">
-                  {formularioLaudo}
+                <pre className="text-slate-700 bg-slate-50 p-6 rounded-lg text-sm leading-relaxed whitespace-pre-wrap max-h-[600px] overflow-y-auto">
+                  {formularioChecklist}
                 </pre>
               </CardContent>
             </Card>
@@ -984,20 +695,16 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
           {/* TAB: DATABASE */}
           <TabsContent value="database">
             <Card className="border-none shadow-lg">
-              <CardHeader className="bg-gradient-to-r from-orange-600 to-orange-700 text-white">
+              <CardHeader className="bg-gradient-to-r from-green-600 to-green-700 text-white">
                 <CardTitle className="flex items-center justify-between">
-                  <span>Esquema SQL / DDL</span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => copyToClipboard(schemaSql, 'sql')}
-                  >
+                  <span>Esquema SQL / DDL Completo</span>
+                  <Button variant="secondary" size="sm" onClick={() => copyToClipboard(schemaSql, 'sql')}>
                     {copiedSection === 'sql' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-6">
-                <pre className="text-slate-700 bg-slate-900 text-green-400 p-6 rounded-lg text-xs overflow-x-auto whitespace-pre font-mono max-h-[600px] overflow-y-auto">
+                <pre className="text-slate-700 bg-slate-900 text-green-400 p-6 rounded-lg text-xs leading-relaxed whitespace-pre font-mono max-h-[600px] overflow-y-auto">
                   {schemaSql}
                 </pre>
               </CardContent>
@@ -1010,11 +717,7 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
               <CardHeader className="bg-gradient-to-r from-indigo-600 to-indigo-700 text-white">
                 <CardTitle className="flex items-center justify-between">
                   <span>Diagrama de Relações (ERD)</span>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => copyToClipboard(erdDescricao, 'erd')}
-                  >
+                  <Button variant="secondary" size="sm" onClick={() => copyToClipboard(erdDescricao, 'erd')}>
                     {copiedSection === 'erd' ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </Button>
                 </CardTitle>
@@ -1027,6 +730,28 @@ As relações entre as tabelas são principalmente do tipo "Um para Muitos" (1:N
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* INFORMAÇÕES ADICIONAIS */}
+        <Card className="mt-8 border-blue-200 bg-gradient-to-br from-blue-50 to-slate-50">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2 text-blue-900">
+              ℹ️ Informações Técnicas da Plataforma
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="space-y-2 text-sm text-slate-700">
+              <li>• <strong>Plataforma:</strong> Base44 (Backend as a Service)</li>
+              <li>• <strong>Frontend:</strong> React + Tailwind CSS + shadcn/ui + TypeScript</li>
+              <li>• <strong>Autenticação:</strong> Gerenciada pela plataforma Base44</li>
+              <li>• <strong>Banco de Dados:</strong> NoSQL gerenciado automaticamente</li>
+              <li>• <strong>Integrações:</strong> IA (OpenAI) para geração de conclusões e recomendações</li>
+              <li>• <strong>Geração de PDF:</strong> Função backend customizada (jsPDF)</li>
+              <li>• <strong>White-Label:</strong> Personalização de logo, cores e assinatura digital</li>
+              <li>• <strong>Normas de Referência:</strong> ABNT NBR 9050:2020, NBR 16537/2017, NM 313/2007</li>
+              <li>• <strong>Legislação:</strong> Lei 10.098/2000, Lei 13.146/2015 (LBI), Decreto 5.296/2004</li>
+            </ul>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
