@@ -1,524 +1,573 @@
-import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Download, FileText, Database, Layers, Code, Users, Bot } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Copy, Check, FileText, Database, BookOpen } from "lucide-react";
 
 export default function Documentacao() {
-  const [markdown, setMarkdown] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [copiedSection, setCopiedSection] = useState(null);
 
-  useEffect(() => {
-    gerarDocumentacao();
-  }, []);
-
-  const gerarDocumentacao = async () => {
-    setIsGenerating(true);
-
-    let doc = `# Documentação Técnica - LaudoAcess\n\n`;
-    doc += `**Versão:** 1.0\n`;
-    doc += `**Data:** ${new Date().toLocaleDateString('pt-BR')}\n`;
-    doc += `**Plataforma:** Base44\n\n`;
-    doc += `---\n\n`;
-
-    // 1. VISÃO GERAL DO SISTEMA
-    doc += `## 1. Visão Geral do Sistema\n\n`;
-    doc += `### 1.1 Descrição\n`;
-    doc += `O **LaudoAcess** é uma aplicação SaaS especializada em laudos técnicos de acessibilidade arquitetônica conforme ABNT NBR 9050:2020. O sistema permite que profissionais da área de arquitetura e engenharia realizem vistorias, registrem conformidades e não-conformidades, e gerem relatórios técnicos profissionais.\n\n`;
-
-    doc += `### 1.2 Funcionalidades Principais\n`;
-    doc += `- ✅ Criação e gestão de laudos técnicos\n`;
-    doc += `- ✅ Checklist detalhado baseado na NBR 9050:2020\n`;
-    doc += `- ✅ Captura de observações via texto e áudio\n`;
-    doc += `- ✅ Análise automatizada com IA para justificativas técnicas\n`;
-    doc += `- ✅ Gestão de ambientes e anexos (fotos, plantas, documentos)\n`;
-    doc += `- ✅ Geração automatizada de PDF profissional\n`;
-    doc += `- ✅ Sistema de templates personalizáveis\n`;
-    doc += `- ✅ Controle de revisões e histórico de alterações\n`;
-    doc += `- ✅ Gestão de perfil profissional (CAU/CREA)\n\n`;
-
-    doc += `### 1.3 Arquitetura Tecnológica\n`;
-    doc += `| Camada | Tecnologia |\n`;
-    doc += `|--------|------------|\n`;
-    doc += `| Frontend | React + TailwindCSS + Shadcn/UI |\n`;
-    doc += `| Backend | Base44 Backend as a Service |\n`;
-    doc += `| Banco de Dados | Base44 Managed Database |\n`;
-    doc += `| Autenticação | Base44 Auth (OAuth + JWT) |\n`;
-    doc += `| IA/ML | OpenAI GPT-4 (via Base44 Integrations) |\n`;
-    doc += `| PDF Generation | Custom Backend Function |\n`;
-    doc += `| Storage | Base44 File Storage |\n\n`;
-
-    // 2. ENTIDADES E MODELO DE DADOS
-    doc += `## 2. Entidades e Modelo de Dados\n\n`;
-
-    const entidades = [
-      { 
-        nome: "Laudo", 
-        descricao: "Entidade principal do sistema, armazena todas as informações do laudo técnico"
-      },
-      { 
-        nome: "Ambiente", 
-        descricao: "Representa os ambientes/espaços vistoriados dentro de uma edificação"
-      },
-      { 
-        nome: "NaoConformidade", 
-        descricao: "Registra não-conformidades identificadas durante a vistoria"
-      },
-      { 
-        nome: "Anexo", 
-        descricao: "Armazena arquivos anexados ao laudo (fotos, plantas, documentos)"
-      },
-      { 
-        nome: "Foto", 
-        descricao: "Registro específico de fotografias categorizadas"
-      },
-      { 
-        nome: "LaudoRevisao", 
-        descricao: "Histórico de revisões e alterações do laudo"
-      },
-      { 
-        nome: "Template", 
-        descricao: "Templates pré-configurados para diferentes tipos de edificação"
-      },
-      { 
-        nome: "ItemNorma", 
-        descricao: "Base de conhecimento com itens da NBR 9050 (2015 e 2020)"
-      }
-    ];
-
-    for (const entidade of entidades) {
-      doc += `### 2.${entidades.indexOf(entidade) + 1} Entidade: ${entidade.nome}\n\n`;
-      doc += `**Descrição:** ${entidade.descricao}\n\n`;
-
-      try {
-        const schema = await base44.entities[entidade.nome].schema();
-        
-        doc += `**Campos:**\n\n`;
-        doc += `| Campo | Tipo | Obrigatório | Descrição |\n`;
-        doc += `|-------|------|-------------|----------|\n`;
-
-        const properties = schema.properties || {};
-        const required = schema.required || [];
-
-        for (const [campo, config] of Object.entries(properties)) {
-          const tipo = config.type || "string";
-          const obrigatorio = required.includes(campo) ? "✅ Sim" : "❌ Não";
-          const descricao = config.description || "-";
-          doc += `| \`${campo}\` | ${tipo} | ${obrigatorio} | ${descricao} |\n`;
-        }
-
-        doc += `\n`;
-      } catch (error) {
-        doc += `_Erro ao carregar schema da entidade_\n\n`;
-      }
-    }
-
-    // 3. ESTRUTURA DE PÁGINAS
-    doc += `## 3. Estrutura de Páginas\n\n`;
-
-    const paginas = [
-      {
-        nome: "Dashboard",
-        rota: "/Dashboard",
-        descricao: "Página inicial com visão geral dos laudos e estatísticas",
-        componentes: ["Card de estatísticas", "Lista de laudos", "Filtros de status"]
-      },
-      {
-        nome: "NovoLaudo",
-        rota: "/NovoLaudo",
-        descricao: "Wizard de criação de novo laudo com navegação por etapas",
-        componentes: ["Stepper", "Formulários de checklist", "Sistema de anexos"]
-      },
-      {
-        nome: "EditarLaudo",
-        rota: "/EditarLaudo?id={id}",
-        descricao: "Edição completa de laudo existente com abas",
-        componentes: ["Tabs de navegação", "Histórico de revisões", "Gestão de ambientes"]
-      },
-      {
-        nome: "Templates",
-        rota: "/Templates",
-        descricao: "Gerenciamento de templates personalizados",
-        componentes: ["Lista de templates", "Formulário de criação/edição"]
-      },
-      {
-        nome: "MeuPerfil",
-        rota: "/MeuPerfil",
-        descricao: "Configurações do perfil profissional do usuário",
-        componentes: ["Dados profissionais", "Upload de assinatura", "Informações de registro"]
-      },
-      {
-        nome: "Guia",
-        rota: "/Guia",
-        descricao: "Guia de referência da ABNT NBR 9050",
-        componentes: ["Base de conhecimento", "Itens técnicos", "Referências normativas"]
-      }
-    ];
-
-    doc += `| Página | Rota | Descrição | Componentes Principais |\n`;
-    doc += `|--------|------|-----------|------------------------|\n`;
-    for (const pagina of paginas) {
-      doc += `| **${pagina.nome}** | \`${pagina.rota}\` | ${pagina.descricao} | ${pagina.componentes.join(", ")} |\n`;
-    }
-    doc += `\n`;
-
-    // 4. COMPONENTES PRINCIPAIS
-    doc += `## 4. Componentes Principais\n\n`;
-
-    const componentes = [
-      {
-        nome: "ChecklistItem",
-        caminho: "components/laudo/ChecklistItem.jsx",
-        descricao: "Componente reutilizável para itens de checklist com suporte a IA",
-        props: ["label", "value", "onChange", "observationValue", "justificativaValue", "tipoAdaptacaoValue"]
-      },
-      {
-        nome: "Conclusao",
-        caminho: "components/laudo/Conclusao.jsx",
-        descricao: "Geração automatizada de conclusão técnica com IA",
-        props: ["data", "onChange", "laudoCompleto"]
-      },
-      {
-        nome: "GestaoAnexos",
-        caminho: "components/laudo/GestaoAnexos.jsx",
-        descricao: "Upload e gerenciamento de anexos (fotos, PDFs, plantas)",
-        props: ["laudoId"]
-      },
-      {
-        nome: "GestaoAmbientes",
-        caminho: "components/laudo/GestaoAmbientes.jsx",
-        descricao: "CRUD de ambientes vistoriados na edificação",
-        props: ["laudoId"]
-      },
-      {
-        nome: "HistoricoRevisoes",
-        caminho: "components/laudo/HistoricoRevisoes.jsx",
-        descricao: "Visualização e restauração de revisões anteriores",
-        props: ["laudoId", "onRestaurar"]
-      },
-      {
-        nome: "ConfiguracaoPDF",
-        caminho: "components/laudo/ConfiguracaoPDF.jsx",
-        descricao: "Modal de configuração para geração de PDF personalizado",
-        props: ["open", "onClose", "onGenerate", "laudoData"]
-      }
-    ];
-
-    for (const comp of componentes) {
-      doc += `### 4.${componentes.indexOf(comp) + 1} ${comp.nome}\n\n`;
-      doc += `**Caminho:** \`${comp.caminho}\`\n\n`;
-      doc += `**Descrição:** ${comp.descricao}\n\n`;
-      doc += `**Props:**\n`;
-      for (const prop of comp.props) {
-        doc += `- \`${prop}\`\n`;
-      }
-      doc += `\n`;
-    }
-
-    // 5. LÓGICA DE NEGÓCIO
-    doc += `## 5. Lógica de Negócio e Fluxos\n\n`;
-
-    doc += `### 5.1 Fluxo de Criação de Laudo\n\n`;
-    doc += `1. **Seleção de Template** (Opcional)\n`;
-    doc += `   - Usuário pode selecionar template pré-configurado\n`;
-    doc += `   - Template aplica configurações padrão e seções específicas\n\n`;
-    doc += `2. **Preenchimento de Informações Gerais**\n`;
-    doc += `   - Dados do imóvel (nome, endereço, tipo de edificação)\n`;
-    doc += `   - Dados do profissional responsável (CAU/CREA, ART/RRT)\n\n`;
-    doc += `3. **Checklist por Categorias**\n`;
-    doc += `   - Passeio Público, Estacionamento, Circulação\n`;
-    doc += `   - Rampas, Escadas, Portas, Elevadores\n`;
-    doc += `   - Sanitários, Vestiários, Mobiliário\n`;
-    doc += `   - Para cada item: Sim/Não/N/A + Observações + IA Assist\n\n`;
-    doc += `4. **Gestão de Ambientes**\n`;
-    doc += `   - Cadastro de ambientes vistoriados\n`;
-    doc += `   - Upload de plantas baixas por ambiente\n\n`;
-    doc += `5. **Anexos e Documentação**\n`;
-    doc += `   - Upload de fotos categorizadas\n`;
-    doc += `   - Upload de documentos complementares\n\n`;
-    doc += `6. **Geração de Conclusão com IA**\n`;
-    doc += `   - IA analisa todas as não-conformidades\n`;
-    doc += `   - Gera conclusão técnica profissional\n`;
-    doc += `   - Sugere recomendações priorizadas\n`;
-    doc += `   - Avalia acessibilidade e viabilidade de adaptação\n\n`;
-    doc += `7. **Geração de PDF**\n`;
-    doc += `   - Seleção de seções a incluir\n`;
-    doc += `   - Customização de cabeçalho/rodapé\n`;
-    doc += `   - Download do relatório final\n\n`;
-
-    doc += `### 5.2 Sistema de Revisões\n\n`;
-    doc += `- Cada alteração no laudo incrementa o número de revisão (R00 → R01 → R02...)\n`;
-    doc += `- Snapshot completo dos dados é armazenado na entidade \`LaudoRevisao\`\n`;
-    doc += `- Usuário pode visualizar e restaurar revisões anteriores\n`;
-    doc += `- Histórico inclui autor, data e descrição da alteração\n\n`;
-
-    doc += `### 5.3 Análise com IA\n\n`;
-    doc += `**Funcionalidades de IA implementadas:**\n\n`;
-    doc += `1. **Justificativas Técnicas Automáticas**\n`;
-    doc += `   - Baseadas em não-conformidades identificadas\n`;
-    doc += `   - Citam artigos específicos da NBR 9050:2020\n`;
-    doc += `   - Sugerem tipo de adaptação (SIM/INS/CIV)\n\n`;
-    doc += `2. **Conclusão e Recomendações**\n`;
-    doc += `   - Análise completa do contexto da edificação\n`;
-    doc += `   - Considera todos os ambientes e não-conformidades\n`;
-    doc += `   - Gera recomendações priorizadas\n`;
-    doc += `   - Avalia viabilidade técnica de adaptações\n\n`;
-    doc += `3. **Transcrição de Áudio** (Planejado)\n`;
-    doc += `   - Observações via gravação de áudio\n`;
-    doc += `   - Transcrição automática para texto\n\n`;
-
-    // 6. SEGURANÇA E CONTROLE DE ACESSO
-    doc += `## 6. Segurança e Controle de Acesso\n\n`;
-
-    doc += `### 6.1 Row Level Security (RLS)\n\n`;
-    doc += `Todas as entidades do sistema implementam RLS para garantir isolamento de dados entre usuários:\n\n`;
-    doc += `| Operação | Regra |\n`;
-    doc += `|----------|-------|\n`;
-    doc += `| **CREATE** | Usuário autenticado (role != guest) |\n`;
-    doc += `| **READ** | \`created_by == user.email\` |\n`;
-    doc += `| **UPDATE** | \`created_by == user.email\` |\n`;
-    doc += `| **DELETE** | \`created_by == user.email\` |\n\n`;
-
-    doc += `### 6.2 Autenticação\n\n`;
-    doc += `- Sistema de autenticação gerenciado pelo Base44\n`;
-    doc += `- Suporte a OAuth (Google, Microsoft, etc.)\n`;
-    doc += `- Tokens JWT para sessões seguras\n`;
-    doc += `- Refresh tokens automáticos\n\n`;
-
-    doc += `### 6.3 Roles e Permissões\n\n`;
-    doc += `| Role | Permissões |\n`;
-    doc += `|------|------------|\n`;
-    doc += `| **Admin** | Gestão de \`ItemNorma\`, acesso total |\n`;
-    doc += `| **User** | CRUD de laudos próprios, templates próprios |\n`;
-    doc += `| **Guest** | Somente leitura (se app for público) |\n\n`;
-
-    // 7. INTEGRAÇÕES
-    doc += `## 7. Integrações e Backend Functions\n\n`;
-
-    doc += `### 7.1 Core Integrations (Base44)\n\n`;
-    doc += `| Integração | Uso |\n`;
-    doc += `|------------|-----|\n`;
-    doc += `| **InvokeLLM** | Análise com IA, geração de conclusões e justificativas |\n`;
-    doc += `| **UploadFile** | Upload de anexos, fotos e documentos |\n`;
-    doc += `| **GenerateImage** | (Reservado para futuras funcionalidades) |\n`;
-    doc += `| **SendEmail** | (Reservado para notificações) |\n\n`;
-
-    doc += `### 7.2 Backend Functions\n\n`;
-    doc += `#### gerarLaudoPDF\n`;
-    doc += `**Função:** Gera PDF profissional do laudo técnico\n\n`;
-    doc += `**Parâmetros de entrada:**\n`;
-    doc += `\`\`\`json\n`;
-    doc += `{\n`;
-    doc += `  "laudoData": {...},  // Dados completos do laudo\n`;
-    doc += `  "config": {\n`;
-    doc += `    "secoes": [],      // Seções a incluir\n`;
-    doc += `    "incluir_header": true,\n`;
-    doc += `    "incluir_footer": true,\n`;
-    doc += `    "sumario_executivo": "...",\n`;
-    doc += `    "conclusao_customizada": "..."\n`;
-    doc += `  }\n`;
-    doc += `}\n`;
-    doc += `\`\`\`\n\n`;
-    doc += `**Saída:** Arquivo PDF binário\n\n`;
-
-    // 8. DESIGN PATTERNS E BOAS PRÁTICAS
-    doc += `## 8. Design Patterns e Boas Práticas\n\n`;
-
-    doc += `### 8.1 Componentização\n\n`;
-    doc += `- Componentes reutilizáveis (\`ChecklistItem\`, \`GestaoAnexos\`)\n`;
-    doc += `- Separação de responsabilidades (UI vs Lógica)\n`;
-    doc += `- Props tipadas e documentadas\n\n`;
-
-    doc += `### 8.2 Estado e Gerenciamento de Dados\n\n`;
-    doc += `- React Hooks (\`useState\`, \`useEffect\`)\n`;
-    doc += `- React Query para cache e sincronização\n`;
-    doc += `- Propagação de mudanças via callbacks (\`onChange\`)\n\n`;
-
-    doc += `### 8.3 UX/UI\n\n`;
-    doc += `- Design responsivo (mobile-first)\n`;
-    doc += `- Feedback visual (loading states, confirmações)\n`;
-    doc += `- Navegação intuitiva (wizard, tabs)\n`;
-    doc += `- Acessibilidade (WCAG 2.1 AA)\n\n`;
-
-    // 9. ESTILOS E DESIGN SYSTEM
-    doc += `## 9. Estilos e Design System\n\n`;
-
-    doc += `### 9.1 Paleta de Cores\n\n`;
-    doc += `| Cor | Código Hex | Uso |\n`;
-    doc += `|-----|------------|-----|\n`;
-    doc += `| **Primary** | \`#2563eb\` (blue-600) | Botões principais, links |\n`;
-    doc += `| **Secondary** | \`#475569\` (slate-600) | Texto secundário |\n`;
-    doc += `| **Success** | \`#16a34a\` (green-600) | Conformidades, sucesso |\n`;
-    doc += `| **Warning** | \`#eab308\` (yellow-500) | Parcial, alertas |\n`;
-    doc += `| **Danger** | \`#dc2626\` (red-600) | Não-conformidades, erros |\n`;
-    doc += `| **Info** | \`#7c3aed\` (purple-600) | IA, assistente |\n\n`;
-
-    doc += `### 9.2 Componentes UI (Shadcn/UI)\n\n`;
-    doc += `- **Button**: Ações primárias e secundárias\n`;
-    doc += `- **Card**: Agrupamento de conteúdo\n`;
-    doc += `- **Input/Textarea**: Entrada de dados\n`;
-    doc += `- **Select**: Seleção de opções\n`;
-    doc += `- **Tabs**: Navegação entre seções\n`;
-    doc += `- **Dialog/Modal**: Confirmações e formulários\n`;
-    doc += `- **Badge**: Status e categorias\n`;
-    doc += `- **Alert**: Mensagens informativas\n\n`;
-
-    doc += `### 9.3 Iconografia\n\n`;
-    doc += `- **Biblioteca:** Lucide React\n`;
-    doc += `- **Estilo:** Outline, 24x24px padrão\n`;
-    doc += `- **Cores:** Herdadas do contexto ou customizadas\n\n`;
-
-    // 10. ROADMAP
-    doc += `## 10. Roadmap e Próximas Funcionalidades\n\n`;
-
-    doc += `### 10.1 Em Desenvolvimento\n\n`;
-    doc += `- [ ] Transcrição automática de áudio para observações\n`;
-    doc += `- [ ] Relatórios analíticos (dashboard avançado)\n`;
-    doc += `- [ ] Exportação para outros formatos (Word, Excel)\n\n`;
-
-    doc += `### 10.2 Planejado\n\n`;
-    doc += `- [ ] Aplicativo móvel (React Native)\n`;
-    doc += `- [ ] Colaboração em tempo real (multi-usuário)\n`;
-    doc += `- [ ] Integração com AutoCAD (importação de plantas)\n`;
-    doc += `- [ ] Sistema de notificações (e-mail, push)\n`;
-    doc += `- [ ] Marketplace de templates da comunidade\n`;
-    doc += `- [ ] Análise preditiva de custos de adaptação\n\n`;
-
-    // APÊNDICES
-    doc += `## Apêndices\n\n`;
-
-    doc += `### A. Glossário\n\n`;
-    doc += `| Termo | Definição |\n`;
-    doc += `|-------|----------|\n`;
-    doc += `| **ABNT** | Associação Brasileira de Normas Técnicas |\n`;
-    doc += `| **NBR 9050** | Norma Brasileira de Acessibilidade |\n`;
-    doc += `| **PCD** | Pessoa com Deficiência |\n`;
-    doc += `| **CAU** | Conselho de Arquitetura e Urbanismo |\n`;
-    doc += `| **CREA** | Conselho Regional de Engenharia e Agronomia |\n`;
-    doc += `| **ART** | Anotação de Responsabilidade Técnica |\n`;
-    doc += `| **RRT** | Registro de Responsabilidade Técnica |\n`;
-    doc += `| **RLS** | Row Level Security (Segurança em Nível de Linha) |\n\n`;
-
-    doc += `### B. Referências Técnicas\n\n`;
-    doc += `- ABNT NBR 9050:2020 - Acessibilidade a edificações, mobiliário, espaços e equipamentos urbanos\n`;
-    doc += `- Lei Federal 13.146/2015 - Lei Brasileira de Inclusão da Pessoa com Deficiência\n`;
-    doc += `- Decreto 5.296/2004 - Regulamenta as Leis de acessibilidade\n`;
-    doc += `- Base44 Documentation - https://docs.base44.com\n\n`;
-
-    doc += `---\n\n`;
-    doc += `**Documento gerado automaticamente pelo sistema LaudoAcess**\n`;
-    doc += `_Este é um documento vivo e será atualizado conforme o sistema evolui._\n`;
-
-    setMarkdown(doc);
-    setIsGenerating(false);
+  const copyToClipboard = (text, section) => {
+    navigator.clipboard.writeText(text);
+    setCopiedSection(section);
+    setTimeout(() => setCopiedSection(null), 2000);
   };
 
-  const downloadMarkdown = () => {
-    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `LaudoAcess_Documentacao_${new Date().toISOString().split('T')[0]}.md`;
-    document.body.appendChild(a);
-    a.click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+  const prdData = {
+    nome: "LaudoAcess",
+    descricao: `LaudoAcess é uma plataforma SaaS abrangente projetada para simplificar a criação e gerenciamento de laudos de acessibilidade, em conformidade com a ABNT NBR 9050:2020 e outras regulamentações brasileiras. A aplicação oferece um fluxo de trabalho intuitivo para arquitetos e engenheiros, permitindo a geração de relatórios detalhados com base em checklists pré-definidos para diversas categorias de ambientes (ex: circulação, rampas, sanitários). Inclui funcionalidades robustas de banco de dados para armazenar informações de imóveis, ambientes, não conformidades, fotos e anexos, além de um sistema de histórico de revisões para cada laudo. Uma integração avançada com IA é utilizada para gerar automaticamente conclusões e recomendações técnicas, otimizando o processo de elaboração do laudo. A plataforma gerencia autenticação de usuários, perfis personalizados com dados profissionais e a possibilidade de white-label (logo e assinatura digital nos PDFs). Além disso, oferece um modelo de licença educacional com restrições de edição de perfil. A interface do usuário é responsiva, moderna e construída para facilitar a navegação e a entrada de dados.`,
+    industria: "Arquitetura, Engenharia Civil, Consultoria de Acessibilidade, Conformidade Regulatória, Auditoria Predial",
+    publicoAlvo: "Arquitetos, Engenheiros, Consultores de Acessibilidade, Empresas de Construção e Órgãos Públicos",
+    complexidade: "Avançado"
   };
+
+  const tabelasBD = `**User** (Entidade padrão Base44 com campos adicionais):
+• id, created_date, updated_date, created_by, full_name, email, role (campos padrão)
+• empresa: string
+• cnpj_cpf: string
+• telefone: string
+• whatsapp: string
+• endereco_profissional: string
+• formacao: string
+• registro_tipo: enum ["CAU", "CREA", "Outro"]
+• registro_numero: string
+• registro_uf: string
+• logo_url: string
+• assinatura_digital_url: string
+• cor_primaria: string
+• tipo_licenca: enum ["completa", "educacional"]
+• nome_licenca: string
+
+**Laudo**:
+• id, created_date, updated_date, created_by (campos padrão)
+• nome_imovel: string
+• endereco: string
+• cidade: string
+• estado: string
+• cep: string
+• tipo_edificacao: enum ["uso_publico", "uso_coletivo", "uso_privado"]
+• tipo_edificacao_detalhe: string
+• total_pavimentos: number
+• area_total: number
+• ano_construcao: number
+• data_vistoria: string (formato data)
+• responsavel_nome: string
+• responsavel_formacao: string
+• responsavel_registro: string
+• responsavel_numero_registro: string
+• responsavel_art_rrt: string
+• responsavel_assinatura_url: string
+• status: enum ["rascunho", "em_andamento", "concluido"]
+• objetivo: string
+• conclusao: string
+• conclusao_gerada_ia: string
+• recomendacoes: string
+• recomendacoes_gerada_ia: string
+• edificacao_acessivel: enum ["sim", "nao", "parcialmente"]
+• edificacao_acessivel_ia: string
+• adaptacao_possivel: enum ["sim", "nao", "parcialmente"]
+• adaptacao_possivel_ia: string
+• numero_revisao: string
+• ultima_etapa_visitada: number
+• ultima_aba_visitada: string
+
+**Ambiente**:
+• id, created_date, updated_date, created_by (campos padrão)
+• laudo_id: string
+• nome: string
+• pavimento: string
+• categoria: string (enum)
+• planta_baixa_url: string
+• ordem: number
+
+**LaudoRevisao**:
+• id, created_date, updated_date, created_by (campos padrão)
+• laudo_id: string
+• numero_revisao: string
+• dados_laudo: object
+• descricao_alteracao: string
+• autor_email: string
+• autor_nome: string
+
+**Anexo**:
+• id, created_date, updated_date, created_by (campos padrão)
+• laudo_id: string
+• tipo: enum ["foto", "pdf", "word", "excel", "planta", "outro"]
+• url: string
+• nome_arquivo: string
+• categoria: string (enum)
+• pavimento: string
+• descricao: string
+• ordem: number
+
+**Template**:
+• id, created_date, updated_date, created_by (campos padrão)
+• nome: string
+• tipo_edificacao: enum ["uso_publico", "uso_coletivo", "uso_privado"]
+• descricao: string
+• objetivo_padrao: string
+• secoes_ativas: array of string
+• dados_padrao: object
+• is_padrao: boolean
+
+**NaoConformidade**:
+• id, created_date, updated_date, created_by (campos padrão)
+• laudo_id: string
+• ambiente_id: string
+• referencia_item_laudo: string
+• categoria: string (enum)
+• item: string
+• pavimento: string
+• status: enum ["sim", "nao", "nao_se_aplica"]
+• observacao_audio_id: string
+• observacao_texto: string
+• justificativa: string
+• justificativa_gerada_ia: string
+• tipo_adaptacao: enum ["SIM", "INS", "CIV", ""]
+• tipo_adaptacao_ia: string
+• necessita_projeto: boolean
+• necessita_projeto_ia: boolean
+• prioridade: enum ["baixa", "media", "alta", "critica", ""]
+• prioridade_ia: string
+
+**ItemNorma**:
+• id, created_date, updated_date, created_by (campos padrão)
+• versao_norma: enum ["2015", "2020"]
+• categoria: string (enum)
+• referencia_item: string
+• descricao: string
+• criterio_aceite: string
+• secao_norma: string
+• imagem_referencia_url: string
+• ordem: number
+• obrigatorio: boolean
+• aplicavel_a: array of enum
+
+**Foto**:
+• id, created_date, updated_date, created_by (campos padrão)
+• laudo_id: string
+• url: string
+• pavimento: string
+• descricao: string
+• ordem: number
+• categoria: string (enum)`;
+
+  const sqlSchema = `-- DDL para as entidades do aplicativo LaudoAcess
+
+-- Tabela: User (Usuários do sistema - entidade padrão Base44 com campos estendidos)
+CREATE TABLE User (
+    id VARCHAR(36) PRIMARY KEY, -- UUID gerado automaticamente
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255), -- Email do usuário que criou o registro
+    full_name VARCHAR(255),
+    email VARCHAR(255) UNIQUE,
+    role ENUM('admin', 'user') DEFAULT 'user',
+    empresa VARCHAR(255),
+    cnpj_cpf VARCHAR(20),
+    telefone VARCHAR(20),
+    whatsapp VARCHAR(20),
+    endereco_profissional TEXT,
+    formacao VARCHAR(255),
+    registro_tipo ENUM('CAU', 'CREA', 'Outro'),
+    registro_numero VARCHAR(50),
+    registro_uf VARCHAR(2),
+    logo_url TEXT,
+    assinatura_digital_url TEXT,
+    cor_primaria VARCHAR(7) DEFAULT '#2563eb',
+    tipo_licenca ENUM('completa', 'educacional') DEFAULT 'completa',
+    nome_licenca VARCHAR(255)
+);
+
+-- Tabela: Laudo (Relatórios de Acessibilidade)
+CREATE TABLE Laudo (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    nome_imovel VARCHAR(255) NOT NULL,
+    endereco TEXT NOT NULL,
+    cidade VARCHAR(100) NOT NULL,
+    estado VARCHAR(50) NOT NULL,
+    cep VARCHAR(10),
+    tipo_edificacao ENUM('uso_publico', 'uso_coletivo', 'uso_privado'),
+    tipo_edificacao_detalhe VARCHAR(255),
+    total_pavimentos INTEGER,
+    area_total DECIMAL(10, 2),
+    ano_construcao INTEGER,
+    data_vistoria DATE,
+    responsavel_nome VARCHAR(255),
+    responsavel_formacao VARCHAR(255),
+    responsavel_registro VARCHAR(50),
+    responsavel_numero_registro VARCHAR(50),
+    responsavel_art_rrt VARCHAR(50),
+    responsavel_assinatura_url TEXT,
+    status ENUM('rascunho', 'em_andamento', 'concluido') DEFAULT 'rascunho',
+    objetivo TEXT,
+    conclusao TEXT,
+    conclusao_gerada_ia TEXT,
+    recomendacoes TEXT,
+    recomendacoes_gerada_ia TEXT,
+    edificacao_acessivel ENUM('sim', 'nao', 'parcialmente'),
+    edificacao_acessivel_ia TEXT,
+    adaptacao_possivel ENUM('sim', 'nao', 'parcialmente'),
+    adaptacao_possivel_ia TEXT,
+    numero_revisao VARCHAR(10) DEFAULT 'R00',
+    ultima_etapa_visitada INTEGER,
+    ultima_aba_visitada VARCHAR(50)
+);
+
+-- Tabela: Ambiente (Ambientes vistoriados dentro de um laudo)
+CREATE TABLE Ambiente (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    laudo_id VARCHAR(36) NOT NULL,
+    nome VARCHAR(255) NOT NULL,
+    pavimento VARCHAR(50),
+    categoria ENUM('passeio_publico', 'estacionamento', 'circulacao', 'rampas', 'escadas', 'portas', 'sanitarios', 'vestiarios', 'elevadores', 'balcoes', 'lavatorios', 'outro'),
+    planta_baixa_url TEXT,
+    ordem INTEGER,
+    FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
+);
+
+-- Tabela: LaudoRevisao (Histórico de revisões de um laudo)
+CREATE TABLE LaudoRevisao (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    laudo_id VARCHAR(36) NOT NULL,
+    numero_revisao VARCHAR(10) NOT NULL,
+    dados_laudo JSONB NOT NULL,
+    descricao_alteracao TEXT,
+    autor_email VARCHAR(255),
+    autor_nome VARCHAR(255),
+    FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
+);
+
+-- Tabela: Anexo (Arquivos anexados a um laudo)
+CREATE TABLE Anexo (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    laudo_id VARCHAR(36) NOT NULL,
+    tipo ENUM('foto', 'pdf', 'word', 'excel', 'planta', 'outro') NOT NULL,
+    url TEXT NOT NULL,
+    nome_arquivo VARCHAR(255),
+    categoria ENUM('passeio_publico', 'estacionamento', 'circulacao', 'rampas', 'escadas', 'portas', 'sanitarios', 'mobiliario', 'elevadores', 'vestiarios', 'balcao', 'geral', 'outro'),
+    pavimento VARCHAR(50),
+    descricao TEXT,
+    ordem INTEGER,
+    FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
+);
+
+-- Tabela: Template (Modelos pré-definidos para criação de laudos)
+CREATE TABLE Template (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    nome VARCHAR(255) NOT NULL,
+    tipo_edificacao ENUM('uso_publico', 'uso_coletivo', 'uso_privado') NOT NULL,
+    descricao TEXT,
+    objetivo_padrao TEXT,
+    secoes_ativas JSONB,
+    dados_padrao JSONB,
+    is_padrao BOOLEAN DEFAULT FALSE
+);
+
+-- Tabela: NaoConformidade (Itens não conformes identificados na vistoria)
+CREATE TABLE NaoConformidade (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    laudo_id VARCHAR(36) NOT NULL,
+    ambiente_id VARCHAR(36),
+    referencia_item_laudo VARCHAR(255) NOT NULL,
+    categoria ENUM('passeio_publico', 'estacionamento', 'circulacao', 'rampas', 'escadas', 'portas', 'sanitarios', 'vestiarios', 'elevadores', 'balcoes', 'lavatorios', 'vagas_pcd', 'superficies_trabalho', 'superficies_refeicao', 'assentos_fixos', 'camas_macas', 'dispositivos') NOT NULL,
+    item TEXT NOT NULL,
+    pavimento VARCHAR(50),
+    status ENUM('sim', 'nao', 'nao_se_aplica') NOT NULL,
+    observacao_audio_id VARCHAR(36),
+    observacao_texto TEXT,
+    justificativa TEXT,
+    justificativa_gerada_ia TEXT,
+    tipo_adaptacao ENUM('SIM', 'INS', 'CIV', ''),
+    tipo_adaptacao_ia ENUM('SIM', 'INS', 'CIV', ''),
+    necessita_projeto BOOLEAN DEFAULT FALSE,
+    necessita_projeto_ia BOOLEAN,
+    prioridade ENUM('baixa', 'media', 'alta', 'critica', ''),
+    prioridade_ia ENUM('baixa', 'media', 'alta', 'critica', ''),
+    FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE,
+    FOREIGN KEY (ambiente_id) REFERENCES Ambiente(id) ON DELETE SET NULL
+);
+
+-- Tabela: ItemNorma (Itens de checklist baseados na ABNT NBR 9050)
+CREATE TABLE ItemNorma (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    versao_norma ENUM('2015', '2020') DEFAULT '2020' NOT NULL,
+    categoria ENUM('passeio_publico', 'estacionamento', 'circulacao', 'rampas', 'escadas', 'portas', 'sanitarios', 'vestiarios', 'elevadores', 'balcoes', 'lavatorios', 'vagas_pcd', 'superficies_trabalho', 'superficies_refeicao', 'assentos_fixos', 'camas_macas', 'dispositivos') NOT NULL,
+    referencia_item VARCHAR(255) NOT NULL UNIQUE,
+    descricao TEXT NOT NULL,
+    criterio_aceite TEXT,
+    secao_norma VARCHAR(50),
+    imagem_referencia_url TEXT,
+    ordem INTEGER,
+    obrigatorio BOOLEAN DEFAULT TRUE,
+    aplicavel_a JSONB
+);
+
+-- Tabela: Foto (Fotos tiradas durante a vistoria)
+CREATE TABLE Foto (
+    id VARCHAR(36) PRIMARY KEY,
+    created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by VARCHAR(255),
+    laudo_id VARCHAR(36) NOT NULL,
+    url TEXT NOT NULL,
+    pavimento VARCHAR(50),
+    descricao TEXT,
+    ordem INTEGER,
+    categoria ENUM('passeio_publico', 'estacionamento', 'circulacao', 'rampas', 'escadas', 'portas', 'sanitarios', 'mobiliario', 'outro'),
+    FOREIGN KEY (laudo_id) REFERENCES Laudo(id) ON DELETE CASCADE
+);`;
+
+  const erdDescription = `**Relações entre as tabelas:**
+
+1. **User (Usuário)**:
+   • 1:N Laudo - Um usuário pode criar muitos laudos
+   • 1:N Ambiente - Um usuário pode criar muitos ambientes
+   • 1:N LaudoRevisao - Um usuário pode criar muitas revisões
+   • 1:N Anexo - Um usuário pode criar muitos anexos
+   • 1:N Template - Um usuário pode criar muitos templates
+   • 1:N NaoConformidade - Um usuário pode criar muitas não conformidades
+   • 1:N ItemNorma - Um usuário admin pode criar muitos itens de norma
+   • 1:N Foto - Um usuário pode criar muitas fotos
+
+2. **Laudo**:
+   • 1:N Ambiente - Um laudo pode conter muitos ambientes
+   • 1:N LaudoRevisao - Um laudo pode ter muitas revisões
+   • 1:N Anexo - Um laudo pode ter muitos anexos
+   • 1:N NaoConformidade - Um laudo pode ter muitas não conformidades
+   • 1:N Foto - Um laudo pode ter muitas fotos
+
+3. **Ambiente**:
+   • N:1 Laudo - Muitos ambientes pertencem a um laudo
+   • 1:N NaoConformidade - Um ambiente pode ter muitas não conformidades
+
+4. **ItemNorma**:
+   • Tabela de referência (checklist base) usada para validação`;
+
+  const prdCompleto = `Nome do Aplicativo: ${prdData.nome}
+
+Descrição Detalhada da Ideia:
+${prdData.descricao}
+
+Indústria: ${prdData.industria}
+
+Público-alvo: ${prdData.publicoAlvo}
+
+Complexidade: ${prdData.complexidade}
+
+Tabelas e campos do banco de dados:
+
+${tabelasBD}`;
 
   return (
     <div className="min-h-screen p-4 md:p-8 bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
-          <div>
-            <h1 className="text-2xl md:text-4xl font-bold text-slate-900 mb-1 md:mb-2">📚 Documentação Técnica</h1>
-            <p className="text-sm md:text-base text-slate-600">Documentação completa do sistema LaudoAcess</p>
-          </div>
-          <Button
-            onClick={downloadMarkdown}
-            disabled={isGenerating || !markdown}
-            className="bg-blue-600 hover:bg-blue-700 gap-2 w-full sm:w-auto"
-          >
-            <Download className="w-5 h-5" />
-            Baixar Markdown
-          </Button>
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 mb-2 flex items-center gap-3">
+            <BookOpen className="w-10 h-10 text-blue-600" />
+            Documentação Técnica
+          </h1>
+          <p className="text-slate-600">
+            Especificações completas do sistema LaudoAcess para desenvolvedores e administradores
+          </p>
         </div>
 
-        {isGenerating ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mb-4"></div>
-            <p className="text-slate-600 text-lg">Gerando documentação técnica...</p>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-              <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100">
-                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
-                  <CardTitle className="flex items-center gap-2 text-blue-900 text-sm md:text-base">
-                    <Database className="w-4 h-4 md:w-5 md:h-5" />
-                    Entidades
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 md:p-6 pt-0">
-                  <div className="text-2xl md:text-3xl font-bold text-blue-900">8</div>
-                  <p className="text-xs md:text-sm text-blue-700">Modelos de dados</p>
-                </CardContent>
-              </Card>
+        <Tabs defaultValue="prd" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="prd">PRD - Product Requirements</TabsTrigger>
+            <TabsTrigger value="tabelas">Tabelas do Banco</TabsTrigger>
+            <TabsTrigger value="sql">Schema SQL (DDL)</TabsTrigger>
+          </TabsList>
 
-              <Card className="border-green-200 bg-gradient-to-br from-green-50 to-green-100">
-                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
-                  <CardTitle className="flex items-center gap-2 text-green-900 text-sm md:text-base">
-                    <Layers className="w-4 h-4 md:w-5 md:h-5" />
-                    Páginas
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 md:p-6 pt-0">
-                  <div className="text-2xl md:text-3xl font-bold text-green-900">6</div>
-                  <p className="text-xs md:text-sm text-green-700">Rotas principais</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100">
-                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
-                  <CardTitle className="flex items-center gap-2 text-purple-900 text-sm md:text-base">
-                    <Code className="w-4 h-4 md:w-5 md:h-5" />
-                    Componentes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 md:p-6 pt-0">
-                  <div className="text-2xl md:text-3xl font-bold text-purple-900">25+</div>
-                  <p className="text-xs md:text-sm text-purple-700">Reutilizáveis</p>
-                </CardContent>
-              </Card>
-
-              <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100">
-                <CardHeader className="pb-2 md:pb-3 p-3 md:p-6">
-                  <CardTitle className="flex items-center gap-2 text-orange-900 text-sm md:text-base">
-                    <Bot className="w-4 h-4 md:w-5 md:h-5" />
-                    IA Features
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-3 md:p-6 pt-0">
-                  <div className="text-2xl md:text-3xl font-bold text-orange-900">3</div>
-                  <p className="text-xs md:text-sm text-orange-700">Recursos de IA</p>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card className="border-slate-200 shadow-xl">
-              <CardHeader className="p-4 md:p-6">
-                <CardTitle className="flex items-center gap-2 text-base md:text-lg">
-                  <FileText className="w-5 h-5 md:w-6 md:h-6 text-blue-600" />
-                  Preview da Documentação
+          <TabsContent value="prd">
+            <Card className="border-none shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <FileText className="w-6 h-6 text-blue-600" />
+                    Product Requirement Document
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(prdCompleto, "prd")}
+                  >
+                    {copiedSection === "prd" ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2 text-green-600" />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copiar Tudo
+                      </>
+                    )}
+                  </Button>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-3 md:p-6 pt-0">
-                <div className="bg-slate-900 rounded-lg p-3 md:p-6 overflow-auto max-h-[400px] md:max-h-[600px]">
-                  <pre className="text-slate-100 text-xs md:text-sm font-mono whitespace-pre-wrap">{markdown}</pre>
+              <CardContent className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Nome do Aplicativo:</h3>
+                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg">{prdData.nome}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Descrição Detalhada da Ideia:</h3>
+                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg leading-relaxed">
+                      {prdData.descricao}
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Indústria:</h3>
+                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg">{prdData.industria}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Público-alvo:</h3>
+                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg">{prdData.publicoAlvo}</p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-bold text-slate-900 mb-2">Complexidade:</h3>
+                    <p className="text-slate-700 bg-slate-50 p-4 rounded-lg">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                        {prdData.complexidade}
+                      </span>
+                    </p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
-          </>
-        )}
+          </TabsContent>
+
+          <TabsContent value="tabelas">
+            <Card className="border-none shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Database className="w-6 h-6 text-blue-600" />
+                    Estrutura das Tabelas
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(tabelasBD + "\n\n" + erdDescription, "tabelas")}
+                  >
+                    {copiedSection === "tabelas" ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2 text-green-600" />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copiar Tudo
+                      </>
+                    )}
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <pre className="bg-slate-900 text-slate-100 p-6 rounded-lg overflow-x-auto text-sm leading-relaxed whitespace-pre-wrap">
+                    {tabelasBD}
+                  </pre>
+                  
+                  <div className="mt-8">
+                    <h3 className="text-lg font-bold text-slate-900 mb-4">
+                      Diagrama de Entidade-Relacionamento (ERD)
+                    </h3>
+                    <pre className="bg-blue-50 text-slate-800 p-6 rounded-lg text-sm leading-relaxed whitespace-pre-wrap border border-blue-200">
+                      {erdDescription}
+                    </pre>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="sql">
+            <Card className="border-none shadow-lg">
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <Database className="w-6 h-6 text-blue-600" />
+                    Schema SQL (DDL)
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => copyToClipboard(sqlSchema, "sql")}
+                  >
+                    {copiedSection === "sql" ? (
+                      <>
+                        <Check className="w-4 h-4 mr-2 text-green-600" />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copiar Schema SQL
+                      </>
+                    )}
+                  </Button>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="bg-slate-900 text-slate-100 p-6 rounded-lg overflow-x-auto">
+                  <pre className="text-sm leading-relaxed whitespace-pre-wrap">
+                    {sqlSchema}
+                  </pre>
+                </div>
+                
+                <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                  <p className="text-sm text-amber-900">
+                    <strong>⚠️ Observação:</strong> Este schema SQL é uma representação conceitual. 
+                    O Base44 gerencia automaticamente a criação e manutenção do banco de dados através 
+                    dos esquemas JSON das entidades. Não é necessário executar estes comandos DDL diretamente.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+
+        <div className="mt-8 p-6 bg-white rounded-lg shadow-lg border border-slate-200">
+          <h3 className="text-lg font-bold text-slate-900 mb-3">ℹ️ Informações Adicionais</h3>
+          <ul className="space-y-2 text-sm text-slate-700">
+            <li>• <strong>Plataforma:</strong> Base44 (Backend as a Service)</li>
+            <li>• <strong>Frontend:</strong> React + Tailwind CSS + shadcn/ui</li>
+            <li>• <strong>Autenticação:</strong> Gerenciada pela plataforma Base44</li>
+            <li>• <strong>Banco de Dados:</strong> NoSQL gerenciado automaticamente</li>
+            <li>• <strong>Integrações:</strong> IA para geração de conclusões e recomendações</li>
+            <li>• <strong>Geração de PDF:</strong> Função backend customizada (jsPDF)</li>
+            <li>• <strong>White-Label:</strong> Personalização de logo, cores e assinatura digital</li>
+          </ul>
+        </div>
       </div>
     </div>
   );
