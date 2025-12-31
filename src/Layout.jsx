@@ -42,6 +42,11 @@ const navigationItems = [
     url: createPageUrl("Guia"),
     icon: BookOpen,
   },
+  {
+    title: "Documentação",
+    url: createPageUrl("Documentacao"),
+    icon: FileText,
+  },
 ];
 
 export default function Layout({ children }) {
